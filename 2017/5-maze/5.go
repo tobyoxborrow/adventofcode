@@ -1,4 +1,5 @@
 package main
+
 /*
 
 Day 5: A Maze of Twisty Trampolines, All Alike
@@ -24,64 +25,42 @@ How many steps does it take to reach the exit?
 
 import (
 	"fmt"
-    "io/ioutil"
-    "strings"
-    "strconv"
+	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
-func GetChallenge() []int {
-    filename := "./input"
-    b, _ := ioutil.ReadFile(filename)
-    s := strings.TrimSpace(string(b))
-    var i []int
-    for _, v := range strings.Fields(s) {
-        n, _ := strconv.Atoi(v)
-        i = append(i, n)
-    }
-    return i
+func getChallenge() []int {
+	filename := "./input"
+	b, _ := ioutil.ReadFile(filename)
+	s := strings.TrimSpace(string(b))
+	var i []int
+	for _, v := range strings.Fields(s) {
+		n, _ := strconv.Atoi(v)
+		i = append(i, n)
+	}
+	return i
 }
 
-func Solve(instructions []int) (steps int) {
-    ilen := len(instructions)
-    fmt.Println("Instructions: ", ilen)
-    for ip := 0; ip >= 0 && ip < ilen; {
-        steps++
-        instruction := instructions[ip]
-        instructions[ip]++
-        ip += instruction
-    }
-    return
-    /*
-    for _, v := range s {
-        fields := strings.Fields(v)
-        words := make(map[string]int8)
-        is_valid := bool(true)
-        for _, v := range fields {
-            runes := strings.Split(v, "")
-            sort.Strings(runes)
-            sorted_v := strings.Join(runes, "")
-            if _, ok := words[sorted_v]; ok {
-                is_valid = bool(false)
-                break
-            } else {
-                words[sorted_v] = 1
-            }
-        }
-        if is_valid {
-            valid_count++
-        }
-    }
-    return
-    */
+func solve(instructions []int) (steps int) {
+	ilen := len(instructions)
+	fmt.Println("Instructions: ", ilen)
+	for ip := 0; ip >= 0 && ip < ilen; {
+		steps++
+		instruction := instructions[ip]
+		instructions[ip]++
+		ip += instruction
+	}
+	return
 }
 
 func main() {
-    fmt.Println(Solve([]int{
-        0,
-        3,
-        0,
-        1,
-        -3,
-    }) == 5)
-    fmt.Println(Solve(GetChallenge()))
+	fmt.Println(solve([]int{
+		0,
+		3,
+		0,
+		1,
+		-3,
+	}) == 5)
+	fmt.Println(solve(getChallenge()))
 }

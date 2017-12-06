@@ -62,19 +62,19 @@ func solve(slots []int) (cycles int) {
 		cycles++
 
 		// identify largest slot and get its blocks
-		largest_i := -1
-		largest_v := -1
+		largestI := -1 // slot index with most blocks
+		largestV := -1 // value of that slot or the largest number of blocks
 		for i := 0; i < nslots; i++ {
-			if slots[i] > largest_v {
-				largest_i = i
-				largest_v = slots[i]
+			if slots[i] > largestV {
+				largestI = i
+				largestV = slots[i]
 			}
 		}
-		slots[largest_i] = 0
+		slots[largestI] = 0
 
 		// redistribute blocks
-		i := largest_i
-		for v := 0; v < largest_v; v++ {
+		i := largestI
+		for v := 0; v < largestV; v++ {
 			if i == (nslots - 1) {
 				i = 0
 			} else {

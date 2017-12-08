@@ -14,7 +14,7 @@ What is the largest value in any register after completing the instructions in
 your puzzle input?
 
 B:
--
+the highest value held in any register during this process
 
 */
 
@@ -57,16 +57,17 @@ func parseLine(line string) (i *instruction) {
 	return
 }
 
-func solveA(lines []string) (largestValue int) {
+func solve(lines []string) (largestFinalValue int, largestValue int) {
 	registers := make(map[string]int)
+	largestValue = 0
 	for _, line := range lines {
 		i := parseLine(line)
 
 		// create any registers mentioned in the instruction
-		if _, ok := registers[i.register]; ok == false {
+		if _, ok := registers[i.register]; !ok {
 			registers[i.register] = 0
 		}
-		if _, ok := registers[i.cregister]; ok == false {
+		if _, ok := registers[i.cregister]; !ok {
 			registers[i.cregister] = 0
 		}
 
@@ -102,13 +103,17 @@ func solveA(lines []string) (largestValue int) {
 		default:
 			panic(fmt.Sprintf("Unknown operation %v", i.operation))
 		}
+
+		if registers[i.register] > largestValue {
+			largestValue = registers[i.register]
+		}
 	}
 
 	// find the largest value and return it
-	largestValue = 0
+	largestFinalValue = 0
 	for _, v := range registers {
-		if v > largestValue {
-			largestValue = v
+		if v > largestFinalValue {
+			largestFinalValue = v
 		}
 	}
 	return
@@ -123,11 +128,10 @@ func main() {
 	}
 	challengeInput := getChallenge()
 
-	fmt.Println("Part A:")
-	fmt.Println(solveA(testCase1) == 1)
-	fmt.Println(solveA(challengeInput))
-
-	//fmt.Println("Part B:")
-	//fmt.Println(solveB(testCase1) == 60)
-	//fmt.Println(solveB(challengeInput))
+	s1, s2 := solve(testCase1)
+	fmt.Println(s1 == 1)
+	fmt.Println(s2 == 10)
+	s1, s2 = solve(challengeInput)
+	fmt.Println(s1)
+	fmt.Println(s2)
 }

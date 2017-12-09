@@ -22,7 +22,7 @@ A:
 What is the total score for all groups in your input?
 
 B:
--
+How many non-canceled characters are within the garbage in your puzzle input?
 
 */
 
@@ -40,7 +40,7 @@ func getChallenge() []byte {
 	return b
 }
 
-func solve(stream []byte) (score int) {
+func solve(stream []byte) (score int, ncc int) {
 	gr := 0     // group depth
 	gb := false // inside garbage
 	ig := false // ignore next char
@@ -48,6 +48,10 @@ func solve(stream []byte) (score int) {
 		if ig {
 			ig = false
 			continue
+		}
+
+		if gb {
+			ncc++
 		}
 
 		switch string(b) {
@@ -64,8 +68,10 @@ func solve(stream []byte) (score int) {
 			gb = true
 		case ">":
 			gb = false
+			ncc--
 		case "!":
 			ig = true
+			ncc--
 		}
 	}
 	return
@@ -76,11 +82,15 @@ func main() {
 	testCase2 := []byte("{{{},{},{{}}}}")
 	testCase3 := []byte("{{<ab>},{<ab>},{<ab>},{<ab>}}")
 	testCase4 := []byte("{{<a!>},{<a!>},{<a!>},{<ab>}}")
+	testCase5 := []byte("<<<<>")
+	testCase6 := []byte("<{o'i!a,<{i<a>")
 	challengeInput := getChallenge()
 
-	fmt.Println(solve(testCase1) == 6)
-	fmt.Println(solve(testCase2) == 16)
-	fmt.Println(solve(testCase3) == 9)
-	fmt.Println(solve(testCase4) == 3)
+	fmt.Println(solve(testCase1)) // 6 0
+	fmt.Println(solve(testCase2)) // 16 0
+	fmt.Println(solve(testCase3)) // 9 8
+	fmt.Println(solve(testCase4)) // 3 17
+	fmt.Println(solve(testCase5)) // 0 3
+	fmt.Println(solve(testCase6)) // 0 10
 	fmt.Println(solve(challengeInput))
 }

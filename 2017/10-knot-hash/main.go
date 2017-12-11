@@ -19,7 +19,8 @@ A:
 What is the result of multiplying the first two numbers in the list?
 
 B:
--
+Treating your puzzle input as a string of ASCII characters, what is the Knot
+Hash of your puzzle input?
 
 */
 
@@ -30,82 +31,127 @@ import (
 	"strings"
 )
 
-func getChallenge() []string {
+func getChallenge() string {
 	filename := "./input"
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	s := strings.TrimSpace(string(b))
-	return strings.Split(s, ",")
+	return s
 }
 
-func solve(listSize int, lengths []string) (result int) {
+func knotHashC() func([]byte) []int {
 	// populate knot list
-	list := make([]int, listSize)
+	list := make([]int, 256)
 	for i := range list {
 		list[i] = i
 	}
 
-	fmt.Println("New solution")
-
 	pos := 0
 	skip := 0
-	// apply length operations on the knot list
-	for i, v := range lengths {
-		l, err := strconv.Atoi(v)
+
+	return func(lengths []byte) []int {
+		for _, v := range lengths {
+			l := int(v)
+			end := pos + l
+			knot := make([]int, end-pos)
+			if end < len(list) {
+				copy(knot, list[pos:end])
+			} else {
+				knot = append(list[pos:len(list)], list[0:end-len(list)]...)
+			}
+
+			// reverse slice (sort.Reverse didn't seem to work on the append slice)
+			// https://github.com/golang/go/wiki/SliceTricks
+			for k := len(knot)/2 - 1; k >= 0; k-- {
+				opp := len(knot) - 1 - k
+				knot[k], knot[opp] = knot[opp], knot[k]
+			}
+
+			// write them back to list
+			for p, k := pos, 0; k < len(knot); p, k = p+1, k+1 {
+				if p >= len(list) {
+					p = 0
+				}
+				list[p] = knot[k]
+			}
+
+			pos += l
+			pos += skip
+			for pos >= len(list) {
+				pos -= len(list)
+			}
+			skip++
+		}
+		return list
+	}
+}
+
+func solve(lengths string) (result int) {
+	// turn string into list of byte array
+	s := strings.Split(lengths, ",")
+	b := make([]byte, len(s))
+	for i := range s {
+		v, err := strconv.Atoi(s[i])
 		if err != nil {
 			panic(err)
 		}
-		end := pos + l
-		fmt.Println(i, "pos, v, l, end", pos, v, l, end)
-		knot := make([]int, end-pos)
-		if end < len(list) {
-			//fmt.Println(i, "copy")
-			copy(knot, list[pos:end])
-		} else {
-			//fmt.Println(i, "append")
-			knot = append(list[pos:len(list)], list[0:end-len(list)]...)
-		}
-		fmt.Println(i, "knot", len(knot), cap(knot), knot)
-
-		// https://github.com/golang/go/wiki/SliceTricks
-		for k := len(knot)/2 - 1; k >= 0; k-- {
-			opp := len(knot) - 1 - k
-			knot[k], knot[opp] = knot[opp], knot[k]
-		}
-		//sort.Sort(sort.Reverse(sort.IntSlice(knot)))
-		//fmt.Println(i, "knot", len(knot), cap(knot), knot)
-
-		// write them back to list
-		for p, k := pos, 0; k < len(knot); p, k = p+1, k+1 {
-			if p >= len(list) {
-				p = 0
-			}
-			list[p] = knot[k]
-		}
-
-		fmt.Println(i, "list", list)
-
-		pos += l
-		pos += skip
-		for pos >= len(list) {
-			pos -= len(list)
-		}
-		skip++
-		fmt.Println(i, "pos, skip, list[0], list[1]", pos, skip, list[0], list[1])
+		b[i] = byte(v)
 	}
 
-	fmt.Println(list[0] * list[1])
+	knotHash := knotHashC()
+
+	list := knotHash(b)
+
 	return list[0] * list[1]
 }
 
-func main() {
-	testCase1 := []string{"3", "4", "1", "5"}
-	testCase2 := []string{"12"}
-	challengeInput := getChallenge()
+func solveB(s string) (hash string) {
+	b := []byte(s)
 
-	fmt.Println(solve(5, testCase1) == 12)
-	fmt.Println(solve(255, testCase2) == 110)
-	fmt.Println(solve(256, challengeInput))
+	// add fixed suffix 17, 31, 73, 47, 23
+	b = append(b, 17, 31, 73, 47, 23)
+
+	// apply 64 rounds of the knot hash
+	knotHash := knotHashC()
+	var sh []int // sparse hash
+	for i := 0; i < 64; i++ {
+		sh = knotHash(b)
+	}
+
+	var dh [16]int // dense hash
+	for i := 0; i < 16; i++ {
+		bx := 0 // block xor value
+		for k := 0; k < 16; k++ {
+			bx ^= sh[(i*16)+k]
+		}
+		dh[i] = bx
+	}
+
+	// format as hexadecimal string
+	hash = ""
+	for i := 0; i < 16; i++ {
+		hc := strconv.FormatInt(int64(dh[i]), 16)
+		hash += fmt.Sprintf("%02s", hc)
+	}
+
+	return
+}
+
+func main() {
+	testCase1 := "12"
+	challengeInput := getChallenge()
+	fmt.Println(solve(testCase1) == 110)
+	fmt.Println(solve(challengeInput))
+
+	testCaseB1 := ""
+	testCaseB2 := "AoC 2017"
+	testCaseB3 := "1,2,3"
+	testCaseB4 := "1,2,4"
+	fmt.Println(solveB(testCaseB1) == "a2582a3a0e66e6e86e3812dcb672a272")
+	fmt.Println(solveB(testCaseB2) == "33efeb34ea91902bb2f59c9920caa6cd")
+	fmt.Println(solveB(testCaseB3) == "3efbe78a8d82f29979031a4aa0b16a9d")
+	fmt.Println(solveB(testCaseB4) == "63960835bcdc130f0b66d7ff4f6a5a8e")
+	fmt.Println(solveB(challengeInput))
 }

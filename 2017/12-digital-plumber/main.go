@@ -16,7 +16,7 @@ A:
 How many programs are in the group that contains program ID 0?
 
 B:
--
+How many groups are there in total?
 
 */
 
@@ -148,6 +148,34 @@ func solve(lines []string) (count int) {
 	return
 }
 
+func solveB(lines []string) (count int) {
+	// populate basic program lookup table from input lines
+	basicPrograms = make(map[string]basicProgram)
+	for _, line := range lines {
+		id, children := parseProgramLine(line)
+		basicPrograms[id] = basicProgram{id, nil, children}
+	}
+
+	visited := make(map[string]bool)
+	for _, v := range basicPrograms {
+		// skip programs we've seen before
+		_, ok := visited[v.id]
+		if ok {
+			continue
+		}
+
+		// build new node tree
+		root := newProgram(v.id)
+		root.addConnections()
+
+		// mark all those visited
+		_ = countPrograms(root, visited)
+
+		count++
+	}
+	return
+}
+
 func main() {
 	testCase1 := []string{
 		"0 <-> 2",
@@ -159,6 +187,10 @@ func main() {
 		"6 <-> 4, 5",
 	}
 	challengeInput := getChallenge()
+
 	fmt.Println(solve(testCase1) == 6)
 	fmt.Println(solve(challengeInput))
+
+	fmt.Println(solveB(testCase1) == 2)
+	fmt.Println(solveB(challengeInput))
 }

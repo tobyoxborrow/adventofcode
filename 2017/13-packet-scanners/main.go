@@ -17,7 +17,8 @@ A:
 What is the severity of your whole trip?
 
 B:
--
+What is the fewest number of picoseconds that you need to delay the packet to
+pass through the firewall without being caught?
 
 */
 
@@ -46,7 +47,7 @@ type layer struct {
 	direction int8 // scanner current movement direction; 0 down, 1 up
 }
 
-func solve(lines []string) (score int) {
+func makeLayers(lines []string) map[int]*layer {
 	// populate basic program lookup table from input lines
 	lastID := 0
 	layers := make(map[int]*layer)
@@ -67,27 +68,23 @@ func solve(lines []string) (score int) {
 		layers[id] = &layer{id, depth, id * depth, 0, 0}
 		lastID = id
 	}
+	return layers
+}
+
+func solve(lines []string) (score int) {
+	layers := makeLayers(lines)
 
 	score = 0
-	/*
-		for p := 0; p <= lastID; p++ {
-			if layers[p].depth == 0 {
-				continue
-			}
-			fmt.Println(p, layers[p].depth)
-		}
-	*/
 
 	// "packet" movement from left to right
-	for p := 0; p <= lastID; p++ {
+	for p := 0; p < len(layers); p++ {
 		// scoring
 		if layers[p].scanner == 0 {
 			score += layers[p].severity
-			//fmt.Println("DING:", p, score)
 		}
 
 		// scanner activity
-		for s := 0; s <= lastID; s++ {
+		for s := 0; s < len(layers); s++ {
 			// skip layers without scanners
 			if layers[s].depth == 0 {
 				continue
@@ -106,15 +103,60 @@ func solve(lines []string) (score int) {
 			}
 		}
 	}
-	/*
-		for p := 0; p <= lastID; p++ {
-			if layers[p].depth == 0 {
+	return
+}
+
+type packet struct {
+	delay    int
+	position int
+}
+
+func solveB(lines []string) (delay int) {
+	layers := makeLayers(lines)
+
+	packets := make(map[int]*packet)
+
+	// picoseconds
+	for ps := 0; ; ps++ {
+		// create new packet for this picosecond
+		packets[ps] = &packet{ps, 0}
+
+		// packet activity
+		for packet := range packets {
+			// check collision
+			if layers[packets[packet].position].scanner == 0 {
+				delete(packets, packet)
 				continue
 			}
-			fmt.Println(p, layers[p].depth, layers[p].scanner, layers[p].direction)
+			// movement
+			packets[packet].position++
+
+			if packets[packet].position >= len(layers) {
+				delay = packets[packet].delay
+				return
+			}
 		}
-	*/
-	return
+
+		// scanner activity
+		for s := 0; s < len(layers); s++ {
+			// skip layers without scanners
+			if layers[s].depth == 0 {
+				continue
+			}
+			// move scanner
+			if layers[s].direction == 0 {
+				layers[s].scanner++
+				if layers[s].scanner == (layers[s].depth - 1) {
+					layers[s].direction = 1
+				}
+			} else {
+				layers[s].scanner--
+				if layers[s].scanner == 0 {
+					layers[s].direction = 0
+				}
+			}
+		}
+	}
 }
 
 func main() {
@@ -128,4 +170,7 @@ func main() {
 
 	fmt.Println(solve(testCase1) == 24)
 	fmt.Println(solve(challengeInput))
+
+	fmt.Println(solveB(testCase1) == 10)
+	fmt.Println(solveB(challengeInput))
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 /*
@@ -54,12 +53,12 @@ func generatorBC(seed int) func() int {
 }
 
 func judge(a, b int) bool {
-	// convert to base two
-	atwo := fmt.Sprintf("%032s", strconv.FormatInt(int64(a), 2))
-	btwo := fmt.Sprintf("%032s", strconv.FormatInt(int64(b), 2))
+	// just the last 16 bits
+	aa := a & 65535
+	bb := b & 65535
 
 	// compare final 16 bits
-	if atwo[16:] == btwo[16:] {
+	if aa == bb {
 		return true
 	}
 	return false
@@ -69,10 +68,7 @@ func solve(seedA, seedB int) (count int) {
 	genA := generatorAC(seedA)
 	genB := generatorBC(seedB)
 	for c := 0; c < 40000000; c++ {
-		a := genA()
-		b := genB()
-
-		if judge(a, b) {
+		if judge(genA(), genB()) {
 			count++
 		}
 	}
@@ -80,6 +76,6 @@ func solve(seedA, seedB int) (count int) {
 }
 
 func main() {
-	fmt.Println(solve(64, 8921) == 588)
+	fmt.Println(solve(65, 8921) == 588)
 	fmt.Println(solve(116, 299))
 }

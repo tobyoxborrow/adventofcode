@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 /*
 
 Day 15: Dueling Generators
@@ -23,6 +19,10 @@ A:
 After 40 million pairs, what is the judge's final count?
 
 */
+
+import (
+	"fmt"
+)
 
 // common code for both generators
 func commonGenerator(prev int, factor int) int {
@@ -52,16 +52,43 @@ func generatorBC(seed int) func() int {
 	}
 }
 
+func generatorA2C(seed int) func() int {
+	factor := 16807
+	prev := seed
+
+	return func() int {
+		for {
+			prev = commonGenerator(prev, factor)
+			if prev%4 == 0 {
+				break
+			}
+		}
+		return prev
+	}
+}
+
+func generatorB2C(seed int) func() int {
+	factor := int(48271)
+	prev := seed
+
+	return func() int {
+		for {
+			prev = commonGenerator(prev, factor)
+			if prev%8 == 0 {
+				break
+			}
+		}
+		return prev
+	}
+}
+
 func judge(a, b int) bool {
 	// just the last 16 bits
 	aa := a & 65535
 	bb := b & 65535
 
 	// compare final 16 bits
-	if aa == bb {
-		return true
-	}
-	return false
+	return aa == bb
 }
 
 func solve(seedA, seedB int) (count int) {
@@ -75,7 +102,20 @@ func solve(seedA, seedB int) (count int) {
 	return
 }
 
+func solveB(seedA, seedB int) (count int) {
+	genA := generatorA2C(seedA)
+	genB := generatorB2C(seedB)
+	for c := 0; c < 5000000; c++ {
+		if judge(genA(), genB()) {
+			count++
+		}
+	}
+	return
+}
+
 func main() {
 	fmt.Println(solve(65, 8921) == 588)
 	fmt.Println(solve(116, 299))
+	fmt.Println(solveB(65, 8921) == 309)
+	fmt.Println(solveB(116, 299))
 }

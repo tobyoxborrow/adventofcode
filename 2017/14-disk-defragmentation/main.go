@@ -16,7 +16,10 @@ import (
 
 func getChallenge() string {
 	filename := "./input"
-	b, _ := ioutil.ReadFile(filename)
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
 	return strings.TrimSpace(string(b))
 }
 
@@ -111,7 +114,6 @@ func rowFromHash(hash string) (row [128]int8) {
 		}
 		// convert base ten to base two with zero padding
 		two := fmt.Sprintf("%04s", strconv.FormatInt(ten, 2))
-		//fmt.Println(two)
 		for d := 0; d < 4; d++ {
 			switch string(two[d]) {
 			case "0":
@@ -125,25 +127,69 @@ func rowFromHash(hash string) (row [128]int8) {
 	return
 }
 
-func solve(keyString string) (usedBlocks int) {
+func makeGrid(keyString string) (grid [128][128]int8) {
 	// create and populate grid
-	var grid [128][128]int8
 	for g := 0; g < len(grid); g++ {
 		hashInput := fmt.Sprintf("%s-%d", keyString, g)
-		//fmt.Println(hashInput)
 		rowHash := getHash(hashInput)
 		row := rowFromHash(rowHash)
-		//fmt.Println(row)
 		grid[g] = row
 	}
+	return
+}
+
+func solve(keyString string) (usedBlocks int) {
+	grid := makeGrid(keyString)
 
 	// count used blocks
 	usedBlocks = 0
 	for g := 0; g < len(grid); g++ {
-		//fmt.Println(grid[g])
 		for r := 0; r < len(grid[g]); r++ {
 			if grid[g][r] == 1 {
 				usedBlocks++
+			}
+		}
+	}
+	return
+}
+
+func findAdjacent(grid *[128][128]int, ogrid *[128][128]int8, y int, x int, id int) {
+	// has this cell already been marked with a region id?
+	if grid[y][x] != 0 {
+		return
+	}
+
+	// mark with this region's id
+	grid[y][x] = id
+
+	// go deeper
+	// check surrounding cells on the original grid to see if they have a value
+	if x > 0 && ogrid[y][x-1] == 1 {
+		findAdjacent(grid, ogrid, y, x-1, id)
+	}
+	if x < len(ogrid[y])-1 && ogrid[y][x+1] == 1 {
+		findAdjacent(grid, ogrid, y, x+1, id)
+	}
+	if y > 0 && ogrid[y-1][x] == 1 {
+		findAdjacent(grid, ogrid, y-1, x, id)
+	}
+	if y < len(ogrid)-1 && ogrid[y+1][x] == 1 {
+		findAdjacent(grid, ogrid, y+1, x, id)
+	}
+	return
+}
+
+func solveB(keyString string) (regions int) {
+	ogrid := makeGrid(keyString) // "original" grid
+	var grid [128][128]int       // grid we'll mark regions on
+	regions = 0                  // region id & count of regions
+
+	// mark regions
+	for y := 0; y < len(ogrid); y++ {
+		for x := 0; x < len(ogrid[y]); x++ {
+			if ogrid[y][x] == 1 && grid[y][x] == 0 {
+				regions++
+				findAdjacent(&grid, &ogrid, y, x, regions)
 			}
 		}
 	}
@@ -155,4 +201,6 @@ func main() {
 	challengeInput := getChallenge()
 	fmt.Println(solve(testCase1) == 8108)
 	fmt.Println(solve(challengeInput))
+	fmt.Println(solveB(testCase1) == 1242)
+	fmt.Println(solveB(challengeInput))
 }

@@ -26,14 +26,14 @@ import (
 
 // common code for both generators
 func commonGenerator(prev int, factor int) int {
-	magic := 2147483647
+	const magic int = 2147483647
 	p := prev * factor
 	r := p % magic
 	return r
 }
 
 func generatorAC(seed int) func() int {
-	factor := 16807
+	const factor int = 16807
 	prev := seed
 
 	return func() int {
@@ -43,7 +43,7 @@ func generatorAC(seed int) func() int {
 }
 
 func generatorBC(seed int) func() int {
-	factor := int(48271)
+	const factor int = 48271
 	prev := seed
 
 	return func() int {
@@ -53,7 +53,7 @@ func generatorBC(seed int) func() int {
 }
 
 func generatorA2C(seed int) func() int {
-	factor := 16807
+	const factor int = 16807
 	prev := seed
 
 	return func() int {
@@ -68,7 +68,7 @@ func generatorA2C(seed int) func() int {
 }
 
 func generatorB2C(seed int) func() int {
-	factor := int(48271)
+	const factor int = 48271
 	prev := seed
 
 	return func() int {
@@ -84,8 +84,8 @@ func generatorB2C(seed int) func() int {
 
 func judge(a, b int) bool {
 	// just the last 16 bits
-	aa := a & 65535
-	bb := b & 65535
+	aa := a & 0xffff
+	bb := b & 0xffff
 
 	// compare final 16 bits
 	return aa == bb

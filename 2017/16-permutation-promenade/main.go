@@ -12,7 +12,7 @@ A:
 In what order are the programs standing after their dance?
 
 B:
--
+In what order are the programs standing after their billion dances?
 
 */
 
@@ -73,17 +73,7 @@ func partner(a rune, b rune) {
 	exchange(ia, ib)
 }
 
-func solve(startOrder string, sequenceList string) string {
-	// since we use programs between runs and use it with different sizes, set
-	// it to nil and create a new slice of the correct size to avoid previous
-	// runs causing problems
-	programs = nil
-	for _, r := range startOrder {
-		programs = append(programs, r)
-	}
-	programs = programs[0:len(startOrder)]
-
-	sequences := strings.Split(sequenceList, ",")
+func dance(sequences []string) {
 	for _, s := range sequences {
 		if len(s) == 0 {
 			continue
@@ -113,13 +103,37 @@ func solve(startOrder string, sequenceList string) string {
 			partner(arg1, arg2)
 		}
 	}
+}
 
+func resetPrograms(newPrograms string) {
+	// since we use programs between runs and use it with different sizes, set
+	// it to nil and create a new slice of the correct size to avoid previous
+	// runs causing problems
+	programs = nil
+	for _, r := range newPrograms {
+		programs = append(programs, r)
+	}
+	programs = programs[0:len(newPrograms)]
+}
+
+func solve(startOrder string, sequenceList string, count int) string {
+	resetPrograms(startOrder)
+	sequences := strings.Split(sequenceList, ",")
+	var prev []string
+	for c := 0; c < count; c++ {
+		dance(sequences)
+		prev = append(prev, string(programs))
+		if string(programs) == startOrder {
+			r := count % len(prev)
+			return prev[r-1]
+		}
+	}
 	return string(programs)
 }
 
 func main() {
-	fmt.Println(solve("abcde", "s1,x3/4,pe/b,") == "baedc")
-	fmt.Println(solve("abcdefghijklmnop", getChallenge()))
-	//fmt.Println(solveB(65, 8921) == 309)
-	//fmt.Println(solveB(116, 299))
+	fmt.Println(solve("abcde", "s1,x3/4,pe/b,", 1) == "baedc")
+	fmt.Println(solve("abcdefghijklmnop", getChallenge(), 1))
+	fmt.Println(solve("abcde", "s1,x3/4,pe/b,", 2) == "ceadb")
+	fmt.Println(solve("abcdefghijklmnop", getChallenge(), 1e9))
 }

@@ -55,7 +55,28 @@ func solve(step int) int {
 	return buffer.data[buffer.pos+1]
 }
 
+func solveB(step int) int {
+	pos := 0
+	len := 1
+	one := 0
+	for c := 0; c < 50e6; c++ {
+		for s := 0; s < step; s++ {
+			pos++
+			if pos >= len {
+				pos = 0
+			}
+		}
+		if pos == 0 {
+			one = c + 1
+		}
+		len++
+		pos++
+	}
+	return one
+}
+
 func main() {
 	fmt.Println(solve(3) == 638)
 	fmt.Println(solve(337))
+	fmt.Println(solveB(337))
 }

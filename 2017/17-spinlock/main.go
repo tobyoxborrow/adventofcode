@@ -60,11 +60,9 @@ func solveB(step int) int {
 	len := 1
 	one := 0
 	for c := 0; c < 50e6; c++ {
-		for s := 0; s < step; s++ {
-			pos++
-			if pos >= len {
-				pos = 0
-			}
+		pos += step
+		for pos >= len {
+			pos -= len
 		}
 		if pos == 0 {
 			one = c + 1

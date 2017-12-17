@@ -42,13 +42,11 @@ type hex struct {
 	s float64 // z
 }
 
-func distance(a hex, b hex) int {
-	// hex subtract
-	c := &hex{a.q - b.q, a.r - b.r, a.s - b.s}
+func (h *hex) distanceFromZero() uint {
 	// hex length
-	d := math.Abs(c.q) + math.Abs(c.r) + math.Abs(c.s)
+	d := math.Abs(h.q) + math.Abs(h.r) + math.Abs(h.s)
 	e := d / 2
-	return int(e)
+	return uint(e)
 }
 
 func (h *hex) move(step string) {
@@ -74,20 +72,20 @@ func (h *hex) move(step string) {
 	}
 }
 
-func solve(steps []string) int {
+func solve(steps []string) uint {
 	h := &hex{0, 0, 0}
 	for _, step := range steps {
 		h.move(step)
 	}
-	return distance(*h, hex{0, 0, 0})
+	return h.distanceFromZero()
 }
 
-func solveB(steps []string) int {
-	furthest := 0
+func solveB(steps []string) uint {
+	var furthest uint
 	h := &hex{0, 0, 0}
 	for _, step := range steps {
 		h.move(step)
-		d := distance(*h, hex{0, 0, 0})
+		d := h.distanceFromZero()
 		if d > furthest {
 			furthest = d
 		}

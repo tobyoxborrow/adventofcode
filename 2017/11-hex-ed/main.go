@@ -43,37 +43,56 @@ type hex struct {
 }
 
 func distance(a hex, b hex) int {
+	// hex subtract
 	c := &hex{a.q - b.q, a.r - b.r, a.s - b.s}
+	// hex length
 	d := math.Abs(c.q) + math.Abs(c.r) + math.Abs(c.s)
-	e := math.Floor(d / 2)
+	e := d / 2
 	return int(e)
+}
+
+func (h *hex) move(step string) {
+	switch step {
+	case "n":
+		h.r++
+		h.s--
+	case "nw":
+		h.q--
+		h.r++
+	case "ne":
+		h.q++
+		h.s--
+	case "s":
+		h.r--
+		h.s++
+	case "sw":
+		h.q--
+		h.s++
+	case "se":
+		h.q++
+		h.r--
+	}
 }
 
 func solve(steps []string) int {
 	h := &hex{0, 0, 0}
 	for _, step := range steps {
-		switch step {
-		case "n":
-			h.r++
-			h.s--
-		case "nw":
-			h.q--
-			h.r++
-		case "ne":
-			h.q++
-			h.s--
-		case "s":
-			h.r--
-			h.s++
-		case "sw":
-			h.q--
-			h.s++
-		case "se":
-			h.q++
-			h.r--
-		}
+		h.move(step)
 	}
 	return distance(*h, hex{0, 0, 0})
+}
+
+func solveB(steps []string) int {
+	furthest := 0
+	h := &hex{0, 0, 0}
+	for _, step := range steps {
+		h.move(step)
+		d := distance(*h, hex{0, 0, 0})
+		if d > furthest {
+			furthest = d
+		}
+	}
+	return furthest
 }
 
 func main() {
@@ -82,4 +101,5 @@ func main() {
 	fmt.Println(solve([]string{"ne", "ne", "s", "s"}) == 2)
 	fmt.Println(solve([]string{"se", "sw", "se", "sw", "sw"}) == 3)
 	fmt.Println(solve(getChallenge()))
+	fmt.Println(solveB(getChallenge()))
 }

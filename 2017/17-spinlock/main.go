@@ -74,7 +74,6 @@ func solveB(step int) int {
 }
 
 func main() {
-	fmt.Println(solve(3) == 638)
-	fmt.Println(solve(337))
-	fmt.Println(solveB(337))
+	fmt.Println("A:", solve(337))
+	fmt.Println("B:", solveB(337))
 }

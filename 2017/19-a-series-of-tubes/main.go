@@ -38,15 +38,22 @@ func getChallenge() []string {
 var grid [][]string
 var steps int
 
+const (
+	up    = 0
+	right = 1
+	down  = 2
+	left  = 3
+)
+
 func changeDirection(y, x int, dir uint) (ny, nx int, ndir uint) {
 	// direction: 0 up, 1 right, 2 down, 3 left
 	ny = y
 	nx = x
 	// where can we go within the grid dimensions and where we've been
-	okUp := y > 0 && dir != 2
-	okRight := x < len(grid[y])-1 && dir != 3
-	okDown := y < len(grid)-1 && dir != 0
-	okLeft := x > 0 && dir != 1
+	okUp := y > 0 && dir != down
+	okRight := x < len(grid[y])-1 && dir != left
+	okDown := y < len(grid)-1 && dir != up
+	okLeft := x > 0 && dir != right
 	// check available neighboughs are valid move positions
 	switch {
 	case okUp && grid[y-1][x] != "-" && grid[y-1][x] != " ":
@@ -71,7 +78,6 @@ func changeDirection(y, x int, dir uint) (ny, nx int, ndir uint) {
 	return
 }
 
-// direction: 0 up, 1 right, 2 down, 3 left
 func walk(y, x int, dir uint) (code string) {
 	if y < 0 || y > len(grid) || x < 0 || x > len(grid[0]) {
 		panic("left the grid")
@@ -92,13 +98,13 @@ func walk(y, x int, dir uint) (code string) {
 		}
 		switch dir {
 		case 0:
-			code += walk(y-1, x, dir)
+			code += walk(y-1, x, up)
 		case 1:
-			code += walk(y, x+1, dir)
+			code += walk(y, x+1, right)
 		case 2:
-			code += walk(y+1, x, dir)
+			code += walk(y+1, x, down)
 		case 3:
-			code += walk(y, x-1, dir)
+			code += walk(y, x-1, left)
 		}
 	}
 
@@ -124,6 +130,8 @@ func makeGrid(lines []string) {
 	}
 	// find the grid dimensions
 	// not every line is the same width
+	// actually that is due to my editor stripping trailing spaces when saving
+	// the input but i'll keep this so it is more reliable
 	longest := 0
 	for _, line := range lines {
 		if len(line) > longest {

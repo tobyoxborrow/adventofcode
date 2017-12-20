@@ -15,8 +15,24 @@ var sample1 = []string{
 	"jgz a -2",
 }
 
+var sample2 = []string{
+	"snd 1",
+	"snd 2",
+	"snd p",
+	"rcv a",
+	"rcv b",
+	"rcv c",
+	"rcv d",
+}
+
 func TestSolve(t *testing.T) {
 	if solve(sample1) != 4 {
+		t.Fail()
+	}
+}
+
+func TestSolveB(t *testing.T) {
+	if solveB(sample2) != 3 {
 		t.Fail()
 	}
 }

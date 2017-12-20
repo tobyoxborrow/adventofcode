@@ -50,9 +50,7 @@ type instruction struct {
 	value2    int
 }
 
-var registers = make(map[string]int)
-
-func parseInstruction(i string) *instruction {
+func parseInstruction(i string, registers map[string]int) *instruction {
 	fields := strings.Fields(i)
 	op := fields[0]
 	arg1 := fields[1]
@@ -73,13 +71,14 @@ func parseInstruction(i string) *instruction {
 }
 
 func solve(instructions []string) int {
+	var registers = make(map[string]int)
 	ip := 0 // instruction pointer
 	var sounds []int
 	for {
 		if ip < 0 || ip >= len(instructions) {
 			break
 		}
-		i := parseInstruction(instructions[ip])
+		i := parseInstruction(instructions[ip], registers)
 		switch i.opcode {
 		case "snd":
 			sounds = append(sounds, i.value1)
@@ -106,7 +105,58 @@ func solve(instructions []string) int {
 	return 0
 }
 
+func execute(instructions []string, cr chan int, cs chan int, pid int) (count int) {
+	var registers = make(map[string]int)
+	registers["p"] = pid
+	count = 0
+	ip := 0 // instruction pointer
+	for {
+		if ip < 0 || ip >= len(instructions) {
+			break
+		}
+		i := parseInstruction(instructions[ip], registers)
+		switch i.opcode {
+		case "snd":
+			cs <- i.value1
+			if pid == 1 {
+				count++
+				counterB <- count
+			}
+		case "rcv":
+			registers[i.argument1] = <-cr
+		case "set":
+			registers[i.argument1] = i.value2
+		case "add":
+			registers[i.argument1] += i.value2
+		case "mul":
+			registers[i.argument1] *= i.value2
+		case "mod":
+			registers[i.argument1] %= i.value2
+		case "jgz":
+			if i.value1 > 0 {
+				ip += int(i.value2)
+				continue
+			}
+		}
+		ip++
+	}
+	return
+}
+
+var counterB = make(chan int, 100)
+
+func solveB(instructions []string) int {
+	c0 := make(chan int, 100)
+	c1 := make(chan int, 100)
+	go execute(instructions, c0, c1, 0)
+	go execute(instructions, c1, c0, 1)
+	for c := range counterB {
+		fmt.Println(c)
+	}
+	return 0
+}
+
 func main() {
 	fmt.Println("A:", solve(getChallenge()))
-	//fmt.Println("B:", solveB(getChallenge()))
+	fmt.Println("B:", solveB(getChallenge()))
 }

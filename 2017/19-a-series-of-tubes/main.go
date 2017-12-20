@@ -46,32 +46,26 @@ const (
 )
 
 func changeDirection(y, x int, dir uint) (ny, nx int, ndir uint) {
-	// direction: 0 up, 1 right, 2 down, 3 left
 	ny = y
 	nx = x
-	// where can we go within the grid dimensions and where we've been
-	okUp := y > 0 && dir != down
-	okRight := x < len(grid[y])-1 && dir != left
-	okDown := y < len(grid)-1 && dir != up
-	okLeft := x > 0 && dir != right
-	// check available neighboughs are valid move positions
+	// check neighboughs for the next valid move position
 	switch {
-	case okUp && grid[y-1][x] != "-" && grid[y-1][x] != " ":
+	case dir != down && grid[y-1][x] != "-" && grid[y-1][x] != " ":
 		// go up
 		ny--
-		ndir = 0
-	case okDown && grid[y+1][x] != "-" && grid[y+1][x] != " ":
+		ndir = up
+	case dir != up && grid[y+1][x] != "-" && grid[y+1][x] != " ":
 		// go down
 		ny++
-		ndir = 2
-	case okRight && grid[y][x+1] != "|" && grid[y][x+1] != " ":
+		ndir = down
+	case dir != left && grid[y][x+1] != "|" && grid[y][x+1] != " ":
 		// go right
 		nx++
-		ndir = 1
-	case okLeft && grid[y][x-1] != "|" && grid[y][x-1] != " ":
+		ndir = right
+	case dir != right && grid[y][x-1] != "|" && grid[y][x-1] != " ":
 		// go left
 		nx--
-		ndir = 3
+		ndir = left
 	default:
 		panic("lost")
 	}
@@ -79,10 +73,6 @@ func changeDirection(y, x int, dir uint) (ny, nx int, ndir uint) {
 }
 
 func walk(y, x int, dir uint) (code string) {
-	if y < 0 || y > len(grid) || x < 0 || x > len(grid[0]) {
-		panic("left the grid")
-	}
-
 	// where are we?
 	switch grid[y][x] {
 	case "+":
@@ -97,13 +87,13 @@ func walk(y, x int, dir uint) (code string) {
 			code += grid[y][x]
 		}
 		switch dir {
-		case 0:
+		case up:
 			code += walk(y-1, x, up)
-		case 1:
+		case right:
 			code += walk(y, x+1, right)
-		case 2:
+		case down:
 			code += walk(y+1, x, down)
-		case 3:
+		case left:
 			code += walk(y, x-1, left)
 		}
 	}
@@ -115,7 +105,8 @@ func walk(y, x int, dir uint) (code string) {
 // find the start of the path in the grid
 // it is always on the top row
 func findStart() (y, x int) {
-	for i, v := range grid[0] {
+	y = 1
+	for i, v := range grid[y] {
 		if v == "|" {
 			x = i
 		}
@@ -128,6 +119,7 @@ func makeGrid(lines []string) {
 	if len(grid) > 0 {
 		return
 	}
+
 	// find the grid dimensions
 	// not every line is the same width
 	// actually that is due to my editor stripping trailing spaces when saving
@@ -138,20 +130,31 @@ func makeGrid(lines []string) {
 			longest = len(line)
 		}
 	}
-	// dump the characters into a 2d grid
+
 	paddingFmt := fmt.Sprintf("%%-%ds", longest)
-	for _, line := range lines {
+	// add one line to the beginning and end of the slice
+	// add one character to the beginning and end of each line
+	// so we can skip bounds checking in the walk
+	nlines := make([]string, len(lines)+2)
+	for i, line := range lines {
 		// right pad out the line to match the longest
 		pline := fmt.Sprintf(paddingFmt, line)
-		tmp := strings.Split(pline, "")
-		grid = append(grid, tmp)
+		nlines[i+1] = " " + pline + " "
+	}
+	nlines[0] = " " + fmt.Sprintf(paddingFmt, "") + " "
+	nlines[len(nlines)-1] = " " + fmt.Sprintf(paddingFmt, "") + " "
+
+	// dump the characters into a 2d grid
+	for _, line := range nlines {
+		row := strings.Split(line, "")
+		grid = append(grid, row)
 	}
 }
 
 func solve(lines []string) string {
 	makeGrid(lines)
 	starty, startx := findStart()
-	code := walk(starty, startx, 2)
+	code := walk(starty, startx, down)
 	return code
 }
 

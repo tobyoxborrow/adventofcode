@@ -151,6 +151,13 @@ func solve(lines []string) int {
 	return findClosest(particles)
 }
 
+func collided(p1 *particle, p2 *particle) bool {
+	if p1.p.x == p2.p.x && p1.p.y == p2.p.y && p1.p.z == p2.p.z {
+		return true
+	}
+	return false
+}
+
 func solveB(lines []string) int {
 	particles := parseParticles(lines)
 
@@ -159,16 +166,16 @@ func solveB(lines []string) int {
 		for _, p := range particles {
 			p.move()
 		}
-		for i, p := range particles {
-			if !p.alive {
+		for i, p1 := range particles {
+			if !p1.alive {
 				continue
 			}
 			for _, p2 := range particles[i+1:] {
 				if !p2.alive {
 					continue
 				}
-				if p2.p.x == p.p.x && p2.p.y == p.p.y && p2.p.z == p.p.z {
-					p.alive = false
+				if collided(p1, p2) {
+					p1.alive = false
 					p2.alive = false
 				}
 			}

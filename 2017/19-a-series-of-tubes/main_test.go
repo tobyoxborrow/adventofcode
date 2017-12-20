@@ -17,6 +17,12 @@ func TestSolve(t *testing.T) {
 	}
 }
 
+func TestSolveB(t *testing.T) {
+	if solveB(sample1) != 38 {
+		t.Fail()
+	}
+}
+
 func BenchmarkSolve(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		solve(sample1)

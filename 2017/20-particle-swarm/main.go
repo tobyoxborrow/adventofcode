@@ -21,7 +21,7 @@ A:
 Which particle will stay closest to position <0,0,0> in the long term?
 
 B:
--
+How many particles are left after all collisions are resolved?
 
 */
 
@@ -49,11 +49,12 @@ type vector struct {
 }
 
 type particle struct {
-	id int
-	p  vector
-	v  vector
-	a  vector
-	d  float64
+	id    int
+	p     vector
+	v     vector
+	a     vector
+	d     float64
+	alive bool
 }
 
 func parseAttribute(attr string) vector {
@@ -76,8 +77,7 @@ func parseAttribute(attr string) vector {
 	return vector{float64(x), float64(y), float64(z)}
 }
 
-func solve(lines []string) int {
-	var particles []*particle
+func parseParticles(lines []string) (particles []*particle) {
 	for id, line := range lines {
 		attrs := strings.Split(line, ", ")
 		var p vector
@@ -94,37 +94,97 @@ func solve(lines []string) int {
 			}
 		}
 		d := math.Abs(p.x) + math.Abs(p.y) + math.Abs(p.z)
-		particles = append(particles, &particle{id, p, v, a, d})
+		particles = append(particles, &particle{id, p, v, a, d, true})
 	}
+	return
+}
+
+// find the closest particle
+func findClosest(particles []*particle) (closestID int) {
+	var closestDistance float64
+	for _, p := range particles {
+		if !p.alive {
+			continue
+		}
+		closestID = p.id
+		closestDistance = p.d
+		break
+	}
+
+	for _, p := range particles {
+		if !p.alive {
+			continue
+		}
+		if p.d < closestDistance {
+			closestID = p.id
+			closestDistance = p.d
+		}
+	}
+	return
+}
+
+func (p *particle) move() {
+	if !p.alive {
+		return
+	}
+	p.v.x += p.a.x
+	p.v.y += p.a.y
+	p.v.z += p.a.z
+	p.p.x += p.v.x
+	p.p.y += p.v.y
+	p.p.z += p.v.z
+	p.d = math.Abs(p.p.x) + math.Abs(p.p.y) + math.Abs(p.p.z)
+}
+
+func solve(lines []string) int {
+	particles := parseParticles(lines)
 
 	// simulate movement
 	// not sure how many rounds, just picked a reasonably big number, turned
 	// out to be enough, then scaled it back until it stopped being correct.
 	for c := 0; c < 400; c++ {
-		for _, particle := range particles {
-			particle.v.x += particle.a.x
-			particle.v.y += particle.a.y
-			particle.v.z += particle.a.z
-			particle.p.x += particle.v.x
-			particle.p.y += particle.v.y
-			particle.p.z += particle.v.z
-			particle.d = math.Abs(particle.p.x) + math.Abs(particle.p.y) + math.Abs(particle.p.z)
+		for _, p := range particles {
+			p.move()
 		}
 	}
 
-	// find the closest particle
-	closestID := particles[0].id
-	closestDistance := particles[0].d
-	for _, particle := range particles[1:] {
-		if particle.d < closestDistance {
-			closestID = particle.id
-			closestDistance = particle.d
+	return findClosest(particles)
+}
+
+func solveB(lines []string) int {
+	particles := parseParticles(lines)
+
+	// simulate movement
+	for c := 0; c < 400; c++ {
+		for _, p := range particles {
+			p.move()
+		}
+		for i, p := range particles {
+			if !p.alive {
+				continue
+			}
+			for _, p2 := range particles[i+1:] {
+				if !p2.alive {
+					continue
+				}
+				if p2.p.x == p.p.x && p2.p.y == p.p.y && p2.p.z == p.p.z {
+					p.alive = false
+					p2.alive = false
+				}
+			}
 		}
 	}
-	return closestID
+
+	living := 0
+	for _, p := range particles {
+		if p.alive {
+			living++
+		}
+	}
+	return living
 }
 
 func main() {
 	fmt.Println("A:", solve(getChallenge()))
-	//fmt.Println("B:", solveB(getChallenge()))
+	fmt.Println("B:", solveB(getChallenge()))
 }

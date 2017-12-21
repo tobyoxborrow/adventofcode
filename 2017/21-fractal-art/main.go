@@ -185,15 +185,15 @@ func (p *pattern) divide() (subPatterns []*pattern) {
 		subPatterns = append(subPatterns, p)
 		return
 	}
-	fmt.Println("divide:", sps, spc, spw)
+	//fmt.Println("divide:", sps, spc, spw)
 	for c := 0; c < spc; c++ {
 		cyoffset := (c / spw) * sps
 		cxoffset := (c % spw) * sps
-		fmt.Println("offsets:", cyoffset, cxoffset)
+		//fmt.Println("offsets:", cyoffset, cxoffset)
 		sp := makeBits(sps)
 		for y := 0; y < sps; y++ {
 			for x := 0; x < sps; x++ {
-				fmt.Println("cyx", c, y, x, cyoffset, cxoffset)
+				//fmt.Println("cyx", c, y, x, cyoffset, cxoffset)
 				sp[y][x] = p.bits[y+cyoffset][x+cxoffset]
 			}
 		}
@@ -215,7 +215,7 @@ func joinPatterns(sp []*pattern) *pattern {
 	} else {
 		spw = int(math.Sqrt(float64(spc)))
 	}
-	fmt.Println("join:", sps, spc, spw)
+	//fmt.Println("join:", sps, spc, spw)
 	if spc == 1 {
 		return sp[0]
 	}
@@ -258,9 +258,9 @@ func (p *pattern) enhance() {
 	fmt.Println("subpatterns count:", len(subPatterns))
 
 	var enhancedSubPatterns = make([]*pattern, 0)
-	for i, sp := range subPatterns {
+	for _, sp := range subPatterns {
 		esp := sp.matchRules()
-		printBits(fmt.Sprintf("esp%d", i), esp.bits)
+		//printBits(fmt.Sprintf("esp%d", i), esp.bits)
 		enhancedSubPatterns = append(enhancedSubPatterns, &esp)
 	}
 
@@ -275,10 +275,10 @@ func solve(lines []string, iterations int) (count int) {
 	image := newPattern(".#./..#/###")
 	for c := 0; c < iterations; c++ {
 		image.enhance()
-		printBits(fmt.Sprintf("enhance%d", c), image.bits)
+		//printBits(fmt.Sprintf("enhance%d", c), image.bits)
 	}
 
-	printBits("final:", image.bits)
+	//printBits("final:", image.bits)
 
 	count = 0
 	for _, row := range image.bits {
@@ -288,11 +288,12 @@ func solve(lines []string, iterations int) (count int) {
 			}
 		}
 	}
-	fmt.Println(count)
+	//fmt.Println(count)
 
 	return
 }
 
 func main() {
 	fmt.Println("A:", solve(getChallenge(), 5))
+	fmt.Println("B:", solve(getChallenge(), 18))
 }

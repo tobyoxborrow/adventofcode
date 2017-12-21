@@ -17,8 +17,12 @@ How many pixels stay on after 18 iterations?
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/gif"
 	"io/ioutil"
 	"math"
+	"os"
 	"strings"
 )
 
@@ -118,8 +122,6 @@ func (p *pattern) rotate() *pattern {
 // flip the pattern once horizontally and return the result
 // original pattern is unchanged
 func (p *pattern) flip() (rotated *pattern) {
-	//fmt.Println("flip", p.size)
-	//printBits("flip:", p.bits)
 	bits := makeBits(p.size)
 
 	for y := 0; y < p.size; y++ {
@@ -134,7 +136,6 @@ func (p *pattern) flip() (rotated *pattern) {
 // match pattern (in all rotations) against needles in rule book
 // return related output pattern
 func (p *pattern) matchRules() pattern {
-	//printBits("match:", p.bits)
 	// rather than rotate for every rule, save each rotation first
 	var rotations [8]*pattern
 	rotations[0] = p
@@ -145,8 +146,6 @@ func (p *pattern) matchRules() pattern {
 	rotations[5] = rotations[1].flip()
 	rotations[6] = rotations[2].flip()
 	rotations[7] = rotations[3].flip()
-	//printBits("rota1:", rotations[1].bits)
-	//printBits("flip1:", rotations[5].bits)
 
 	// find a match
 	for _, rule := range ruleBook {
@@ -185,20 +184,16 @@ func (p *pattern) divide() (subPatterns []*pattern) {
 		subPatterns = append(subPatterns, p)
 		return
 	}
-	//fmt.Println("divide:", sps, spc, spw)
 	for c := 0; c < spc; c++ {
 		cyoffset := (c / spw) * sps
 		cxoffset := (c % spw) * sps
-		//fmt.Println("offsets:", cyoffset, cxoffset)
 		sp := makeBits(sps)
 		for y := 0; y < sps; y++ {
 			for x := 0; x < sps; x++ {
-				//fmt.Println("cyx", c, y, x, cyoffset, cxoffset)
 				sp[y][x] = p.bits[y+cyoffset][x+cxoffset]
 			}
 		}
 		subPatterns = append(subPatterns, &pattern{sps, sp})
-		//printBits("divide:", sp)
 	}
 	return
 }
@@ -215,7 +210,6 @@ func joinPatterns(sp []*pattern) *pattern {
 	} else {
 		spw = int(math.Sqrt(float64(spc)))
 	}
-	//fmt.Println("join:", sps, spc, spw)
 	if spc == 1 {
 		return sp[0]
 	}
@@ -224,15 +218,12 @@ func joinPatterns(sp []*pattern) *pattern {
 	for c := 0; c < spc; c++ {
 		cyoffset := (c / spw) * sps
 		cxoffset := (c % spw) * sps
-		//fmt.Println("offsets:", cyoffset, cxoffset)
 		for y := 0; y < sps; y++ {
 			for x := 0; x < sps; x++ {
 				bits[y+cyoffset][x+cxoffset] = sp[c].bits[y][x]
 			}
 		}
-		//printBits(fmt.Sprintf("join%d:", c), bits)
 	}
-	//printBits("join:", bits)
 	return &pattern{size, bits}
 }
 
@@ -246,21 +237,14 @@ func makeBits(size int) (bits [][]int8) {
 	return
 }
 
-func printBits(s string, bits [][]int8) {
-	for i, v := range bits {
-		fmt.Println(s, i, v)
-	}
-}
-
 // enhance 224 176. enhance. stop. move in. stop. pull out, track right. stop.
 func (p *pattern) enhance() {
 	subPatterns := p.divide()
-	fmt.Println("subpatterns count:", len(subPatterns))
+	//fmt.Println("subpatterns count:", len(subPatterns))
 
 	var enhancedSubPatterns = make([]*pattern, 0)
 	for _, sp := range subPatterns {
 		esp := sp.matchRules()
-		//printBits(fmt.Sprintf("esp%d", i), esp.bits)
 		enhancedSubPatterns = append(enhancedSubPatterns, &esp)
 	}
 
@@ -272,23 +256,45 @@ func (p *pattern) enhance() {
 func solve(lines []string, iterations int) (count int) {
 	ruleBook = readRuleBook(lines)
 
-	image := newPattern(".#./..#/###")
+	pixels := newPattern(".#./..#/###")
 	for c := 0; c < iterations; c++ {
-		image.enhance()
-		//printBits(fmt.Sprintf("enhance%d", c), image.bits)
+		pixels.enhance()
 	}
 
-	//printBits("final:", image.bits)
-
 	count = 0
-	for _, row := range image.bits {
+	for _, row := range pixels.bits {
 		for _, v := range row {
 			if v == 1 {
 				count++
 			}
 		}
 	}
-	//fmt.Println(count)
+
+	palette := []color.Color{
+		color.RGBA{0x00, 0x00, 0x00, 0xff},
+		color.RGBA{0xff, 0xff, 0xff, 0xff},
+	}
+	img := image.NewPaletted(image.Rect(0, 0, len(pixels.bits), len(pixels.bits)), palette)
+	toimg, err := os.Create(fmt.Sprintf("new%d.gif", iterations))
+	if err != nil {
+		panic(err)
+	}
+	defer toimg.Close()
+	c0 := color.RGBA{0x00, 0x00, 0x00, 0xff}
+	c1 := color.RGBA{0xff, 0xff, 0xff, 0xff}
+	for y := 0; y < len(pixels.bits); y++ {
+		for x := 0; x < len(pixels.bits); x++ {
+			if pixels.bits[y][x] == 1 {
+				img.Set(x, y, c1)
+			} else {
+				img.Set(x, y, c0)
+			}
+		}
+	}
+	err = gif.Encode(toimg, img, nil)
+	if err != nil {
+		panic(err)
+	}
 
 	return
 }

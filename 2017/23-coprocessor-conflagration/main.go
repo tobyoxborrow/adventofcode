@@ -96,65 +96,61 @@ func solve(instructions []string, debugMode int) int {
 }
 
 func solveB(debugMode int) int {
-	var registers = make(map[byte]int)
-	registers['a'] = debugMode
-	registers['b'] = 0
-	registers['c'] = 0
-	registers['d'] = 0
-	registers['e'] = 0
-	registers['f'] = 0
-	registers['g'] = 0
-	registers['h'] = 0
+	a := debugMode
+	b := 0
+	c := 0
+	d := 0
+	e := 0
+	f := 0
+	g := 0
+	h := 0
 
 	// translated input instructions
-	registers['b'] = 57             // set b 57
-	registers['c'] = registers['b'] // set c b
-	if registers['a'] == 0 {        // jnz a 2
-		goto i9 // jnz 1 5 (unconditional jump)
+	b = 57            // set b 57
+	c = b             // set c b
+	if a == debugOn { // jnz a 2 & jnz 1 5 (unconditional jump)
+		b *= 100    // mul b 100
+		b += 100000 // sub b -100000
+		c = b       // set c b
+		c += 17000  // sub c -17000
 	}
-	registers['b'] *= 100           // mul b 100
-	registers['b'] -= -100000       // sub b -100000
-	registers['c'] = registers['b'] // set c b
-	registers['c'] -= -17000        // sub c -17000
-i9:
-	registers['f'] = 1 // set f 1
-	registers['d'] = 2 // set d 2
-i11:
-	registers['e'] = 2 // set e 2
-i12:
-	registers['g'] = registers['d']  // set g d
-	registers['g'] *= registers['e'] // mul g e
-	registers['g'] -= registers['b'] // sub g b
-	if registers['g'] == 0 {         // jnz g 2
-		registers['f'] = 0 // set f 0
-	}
-	registers['e'] -= -1             // sub e -1
-	registers['g'] = registers['e']  // set g e
-	registers['g'] -= registers['b'] // sub g b
-	if registers['g'] != 0 {         // jnz g -8
-		goto i12
-	}
-	registers['d'] -= -1             // sub d -1
-	registers['g'] = registers['d']  // set g d
-	registers['g'] -= registers['b'] // sub g b
-	if registers['g'] != 0 {         // jnz g -13
-		goto i11
-	}
-	if registers['f'] == 0 { // jnz f 2
-		registers['h'] -= -1 // sub h -1
-	}
-	registers['g'] = registers['b']  // set g b
-	registers['g'] -= registers['c'] // sub g c
-	if registers['g'] == 0 {         // jnz g 2
-		goto end // jnz 1 3
-	}
-	registers['b'] -= -17 // sub b -17
-	goto i9               // jnz 1 -23 (unconditional jump)
-end:
-	// 0 1 map[b:57 c:57 f:0 d:57 e:57 g:0 h:1 a:0]
-	//printRegisters("end", registers)
-	//fmt.Println(debugMode, registers['h'], registers)
-	return registers['h']
+	//fmt.Println("start", a, b, c, d, e, f, g, h)
+	for {
+		f = 1 // set f 1
+		d = 2 // set d 2
+	i11:
+		e = 2 // set e 2
+	i12:
+		g = d       // set g d
+		g *= e      // mul g e
+		g -= b      // sub g b
+		if g == 0 { // jnz g 2
+			f = 0 // set f 0
+		}
+		e++         // sub e -1
+		g = e       // set g e
+		g -= b      // sub g b
+		if g != 0 { // jnz g -8
+			goto i12
+		}
+		d++         // sub d -1
+		g = d       // set g d
+		g -= b      // sub g b
+		if g != 0 { // jnz g -13
+			goto i11
+		}
+		if f == 0 { // jnz f 2
+			h++ // sub h -1
+		}
+		g = b       // set g b
+		g -= c      // sub g c
+		if g == 0 { // jnz g 2
+			break // jnz 1 3 (unconditional jump)
+		}
+		b += 17 // sub b -17
+	} // jnz 1 -23 (unconditional jump)
+	//fmt.Println("end", a, b, c, d, e, f, g, h)
+	return h
 }
 
 func printRegisters(s string, registers map[byte]int) {

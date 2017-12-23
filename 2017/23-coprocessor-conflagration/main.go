@@ -8,7 +8,8 @@ A:
 How many times is the mul instruction invoked?
 
 B:
--
+After setting register a to 1, if the program were to run to completion, what
+value would be left in register h?
 
 */
 
@@ -57,8 +58,15 @@ func parseInstruction(i string, registers map[string]int) *instruction {
 	return &instruction{op, arg1, arg2, val1, val2}
 }
 
-func solve(instructions []string) (count int) {
+const (
+	debugOff = 0
+	debugOn  = 1
+)
+
+func solve(instructions []string, debugMode int) int {
 	var registers = make(map[string]int)
+	registers["a"] = debugMode
+	mulCount := 0
 	ip := 0 // instruction pointer
 	for {
 		if ip < 0 || ip >= len(instructions) {
@@ -72,7 +80,7 @@ func solve(instructions []string) (count int) {
 			registers[i.argument1] -= i.value2
 		case "mul":
 			registers[i.argument1] *= i.value2
-			count++
+			mulCount++
 		case "jnz":
 			if i.value1 != 0 {
 				ip += int(i.value2)
@@ -81,10 +89,13 @@ func solve(instructions []string) (count int) {
 		}
 		ip++
 	}
-	return
+	if debugMode == 1 {
+		return registers["h"]
+	}
+	return mulCount
 }
 
 func main() {
-	fmt.Println("A:", solve(getChallenge()))
-	//fmt.Println("B:", solveB(getChallenge()))
+	fmt.Println("A:", solve(getChallenge(), debugOff))
+	fmt.Println("B:", solve(getChallenge(), debugOn))
 }

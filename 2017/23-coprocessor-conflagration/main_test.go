@@ -9,6 +9,7 @@ var sample1 = []string{
 	"set h 8",
 }
 
+/*
 func TestSolve(t *testing.T) {
 	if solve(sample1, debugOff) != 2 {
 		t.Fail()
@@ -20,9 +21,22 @@ func TestSolveB(t *testing.T) {
 		t.Fail()
 	}
 }
+*/
+
+func TestSolveV2(t *testing.T) {
+	if solveB(debugOff) != 1 {
+		t.Fail()
+	}
+}
 
 func BenchmarkSolve(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		solve(sample1, debugOff)
+		solve(getChallenge(), debugOff)
+	}
+}
+
+func BenchmarkSolveB(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		solveB(debugOff)
 	}
 }

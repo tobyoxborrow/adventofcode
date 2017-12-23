@@ -95,7 +95,78 @@ func solve(instructions []string, debugMode int) int {
 	return mulCount
 }
 
+func solveB(debugMode int) int {
+	var registers = make(map[byte]int)
+	registers['a'] = debugMode
+	registers['b'] = 0
+	registers['c'] = 0
+	registers['d'] = 0
+	registers['e'] = 0
+	registers['f'] = 0
+	registers['g'] = 0
+	registers['h'] = 0
+
+	// translated input instructions
+	registers['b'] = 57             // set b 57
+	registers['c'] = registers['b'] // set c b
+	if registers['a'] == 0 {        // jnz a 2
+		goto i9 // jnz 1 5 (unconditional jump)
+	}
+	registers['b'] *= 100           // mul b 100
+	registers['b'] -= -100000       // sub b -100000
+	registers['c'] = registers['b'] // set c b
+	registers['c'] -= -17000        // sub c -17000
+i9:
+	registers['f'] = 1 // set f 1
+	registers['d'] = 2 // set d 2
+i11:
+	registers['e'] = 2 // set e 2
+i12:
+	registers['g'] = registers['d']  // set g d
+	registers['g'] *= registers['e'] // mul g e
+	registers['g'] -= registers['b'] // sub g b
+	if registers['g'] == 0 {         // jnz g 2
+		registers['f'] = 0 // set f 0
+	}
+	registers['e'] -= -1             // sub e -1
+	registers['g'] = registers['e']  // set g e
+	registers['g'] -= registers['b'] // sub g b
+	if registers['g'] != 0 {         // jnz g -8
+		goto i12
+	}
+	registers['d'] -= -1             // sub d -1
+	registers['g'] = registers['d']  // set g d
+	registers['g'] -= registers['b'] // sub g b
+	if registers['g'] != 0 {         // jnz g -13
+		goto i11
+	}
+	if registers['f'] == 0 { // jnz f 2
+		registers['h'] -= -1 // sub h -1
+	}
+	registers['g'] = registers['b']  // set g b
+	registers['g'] -= registers['c'] // sub g c
+	if registers['g'] == 0 {         // jnz g 2
+		goto end // jnz 1 3
+	}
+	registers['b'] -= -17 // sub b -17
+	goto i9               // jnz 1 -23 (unconditional jump)
+end:
+	// 0 1 map[b:57 c:57 f:0 d:57 e:57 g:0 h:1 a:0]
+	//printRegisters("end", registers)
+	//fmt.Println(debugMode, registers['h'], registers)
+	return registers['h']
+}
+
+func printRegisters(s string, registers map[byte]int) {
+	tmp := s + ": "
+	for k, v := range registers {
+		tmp += fmt.Sprintf("%s:%d ", string(k), v)
+	}
+	fmt.Println(tmp)
+}
+
 func main() {
 	fmt.Println("A:", solve(getChallenge(), debugOff))
-	fmt.Println("B:", solve(getChallenge(), debugOn))
+	//fmt.Println("B:", solve(getChallenge(), debugOn))
+	//fmt.Println("B:", solveB(getChallenge(), debugOn))
 }

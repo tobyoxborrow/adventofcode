@@ -90,7 +90,7 @@ func solve(instructions []string, debugMode int) int {
 		}
 		ip++
 	}
-	if debugMode == 1 {
+	if debugMode == debugOn {
 		return registers["h"]
 	}
 	return mulCount

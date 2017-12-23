@@ -26,6 +26,18 @@ func TestSolveA3(t *testing.T) {
 	}
 }
 
+func TestSolveB1(t *testing.T) {
+	if solveB(sample1, 100) != 26 {
+		t.Fail()
+	}
+}
+
+func TestSolveB2(t *testing.T) {
+	if solveB(sample1, 10000000) != 2511944 {
+		t.Fail()
+	}
+}
+
 func BenchmarkSolve(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		solve(sample1, 10000)

@@ -16,6 +16,7 @@ value would be left in register h?
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -97,13 +98,13 @@ func solve(instructions []string, debugMode int) int {
 
 func solveB(debugMode int) int {
 	a := debugMode
-	b := 0
-	c := 0
-	d := 0
-	e := 0
-	f := 0
-	g := 0
-	h := 0
+	var b int // start
+	var c int // end
+	//d := 0  // loop counter
+	//e := 0  // loop counter
+	//f := 0  // flag number is not prime
+	var g int // general purpose register
+	h := 0    // counter for numbers between start and end that are not prime
 
 	// translated input instructions
 	b = 57            // set b 57
@@ -114,33 +115,40 @@ func solveB(debugMode int) int {
 		c = b       // set c b
 		c += 17000  // sub c -17000
 	}
-	//fmt.Println("start", a, b, c, d, e, f, g, h)
+
 	for {
-		f = 1 // set f 1
-		d = 2 // set d 2
-	i11:
-		e = 2 // set e 2
-	i12:
-		g = d       // set g d
-		g *= e      // mul g e
-		g -= b      // sub g b
-		if g == 0 { // jnz g 2
-			f = 0 // set f 0
-		}
-		e++         // sub e -1
-		g = e       // set g e
-		g -= b      // sub g b
-		if g != 0 { // jnz g -8
-			goto i12
-		}
-		d++         // sub d -1
-		g = d       // set g d
-		g -= b      // sub g b
-		if g != 0 { // jnz g -13
-			goto i11
-		}
-		if f == 0 { // jnz f 2
-			h++ // sub h -1
+		/*
+				f = 1 // set f 1
+				d = 2 // set d 2
+				for {
+					e = 2 // set e 2
+					for {
+						g = d       // set g d
+						g *= e      // mul g e
+						g -= b      // sub g b
+						if g == 0 { // jnz g 2
+							f = 0 // set f 0
+						}
+						e++         // sub e -1
+						g = e       // set g e
+						g -= b      // sub g b
+						if g == 0 { // jnz g -8
+							break
+						}
+					}
+					d++         // sub d -1
+					g = d       // set g d
+					g -= b      // sub g b
+					if g == 0 { // jnz g -13
+						break
+					}
+				}
+			if f == 0 { // jnz f 2
+				h++ // sub h -1
+			}
+		*/
+		if !isPrimeSqrt(b) {
+			h++
 		}
 		g = b       // set g b
 		g -= c      // sub g c
@@ -149,20 +157,20 @@ func solveB(debugMode int) int {
 		}
 		b += 17 // sub b -17
 	} // jnz 1 -23 (unconditional jump)
-	//fmt.Println("end", a, b, c, d, e, f, g, h)
 	return h
 }
 
-func printRegisters(s string, registers map[byte]int) {
-	tmp := s + ": "
-	for k, v := range registers {
-		tmp += fmt.Sprintf("%s:%d ", string(k), v)
+// https://www.thepolyglotdeveloper.com/2016/12/determine-number-prime-using-golang/
+func isPrimeSqrt(value int) bool {
+	for i := 2; i <= int(math.Floor(math.Sqrt(float64(value)))); i++ {
+		if value%i == 0 {
+			return false
+		}
 	}
-	fmt.Println(tmp)
+	return value > 1
 }
 
 func main() {
 	fmt.Println("A:", solve(getChallenge(), debugOff))
-	//fmt.Println("B:", solve(getChallenge(), debugOn))
-	//fmt.Println("B:", solveB(getChallenge(), debugOn))
+	fmt.Println("B:", solveB(debugOn))
 }

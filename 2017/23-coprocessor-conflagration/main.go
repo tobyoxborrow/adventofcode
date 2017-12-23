@@ -97,66 +97,23 @@ func solve(instructions []string, debugMode int) int {
 }
 
 func solveB(debugMode int) int {
-	a := debugMode
-	var b int // start
-	var c int // end
-	//d := 0  // loop counter
-	//e := 0  // loop counter
-	//f := 0  // flag number is not prime
-	var g int // general purpose register
-	h := 0    // counter for numbers between start and end that are not prime
+	h := 0 // counter for numbers between start and end that are not prime
 
 	// translated input instructions
-	b = 57            // set b 57
-	c = b             // set c b
-	if a == debugOn { // jnz a 2 & jnz 1 5 (unconditional jump)
-		b *= 100    // mul b 100
-		b += 100000 // sub b -100000
-		c = b       // set c b
-		c += 17000  // sub c -17000
+	start := 57               // set b 57
+	end := start              // set c b
+	if debugMode == debugOn { // jnz a 2 & jnz 1 5 (unconditional jump)
+		start *= 100    // mul b 100
+		start += 100000 // sub b -100000
+		end = start     // set c b
+		end += 17000    // sub c -17000
 	}
 
-	for {
-		/*
-				f = 1 // set f 1
-				d = 2 // set d 2
-				for {
-					e = 2 // set e 2
-					for {
-						g = d       // set g d
-						g *= e      // mul g e
-						g -= b      // sub g b
-						if g == 0 { // jnz g 2
-							f = 0 // set f 0
-						}
-						e++         // sub e -1
-						g = e       // set g e
-						g -= b      // sub g b
-						if g == 0 { // jnz g -8
-							break
-						}
-					}
-					d++         // sub d -1
-					g = d       // set g d
-					g -= b      // sub g b
-					if g == 0 { // jnz g -13
-						break
-					}
-				}
-			if f == 0 { // jnz f 2
-				h++ // sub h -1
-			}
-		*/
-		if !isPrimeSqrt(b) {
+	for x := start; x <= end; x += 17 {
+		if !isPrimeSqrt(x) {
 			h++
 		}
-		g = b       // set g b
-		g -= c      // sub g c
-		if g == 0 { // jnz g 2
-			break // jnz 1 3 (unconditional jump)
-		}
-		b += 17 // sub b -17
-	} // jnz 1 -23 (unconditional jump)
+	}
 	return h
 }
 

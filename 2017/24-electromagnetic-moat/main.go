@@ -63,42 +63,33 @@ func makeComponents(lines []string) (components []*component) {
 }
 
 type bridge struct {
-	path       string
-	components []*component
-	visited    map[string]bool
-	strength   int
+	visited  map[string]bool
+	strength int
+	length   int
 }
 
 var bridges []*bridge
 
 func newBridge() *bridge {
-	p := ""
-	c := make([]*component, 0)
 	v := make(map[string]bool)
-	return &bridge{p, c, v, 0}
+	return &bridge{v, 0, 0}
 }
 
-func addBridge(pbridge bridge, c *component) bridge {
-	_path := pbridge.path
-	_components := pbridge.components
-	//_visited := pbridge.visited
-	_visited := make(map[string]bool, len(pbridge.visited))
+func addBridge(pbridge *bridge, c *component) *bridge {
+	_visited := make(map[string]bool, len(pbridge.visited)+1)
 	for k, v := range pbridge.visited {
 		_visited[k] = v
 	}
-	_strength := pbridge.strength
-
-	_path += fmt.Sprintf("%s--", c.id)
-	_components = append(_components, c)
 	_visited[c.id] = true
-	_strength += c.strength
+	_strength := pbridge.strength + c.strength
+	_length := pbridge.length + 1
 
-	nbridge := &bridge{_path, _components, _visited, _strength}
+	nbridge := &bridge{_visited, _strength, _length}
 	bridges = append(bridges, nbridge)
-	return *nbridge
+	return nbridge
 }
 
-func buildBridges(c *component, pport int, pbridge bridge) {
+func buildBridges(c *component, pport int, pbridge *bridge) {
 	if pbridge.visited[c.id] {
 		return
 	}
@@ -122,7 +113,10 @@ func buildBridges(c *component, pport int, pbridge bridge) {
 	}
 }
 
-func solve(lines []string) int {
+var answerA int
+var answerB int
+
+func solve(lines []string) {
 	bridges = nil
 	components = makeComponents(lines)
 
@@ -130,21 +124,29 @@ func solve(lines []string) int {
 	for _, c := range components {
 		if c.ports[0] == 0 || c.ports[1] == 0 {
 			bridge := newBridge()
-			buildBridges(c, 0, *bridge)
+			buildBridges(c, 0, bridge)
 		}
 	}
 
 	// which is the best?
-	best := -1
+	strongest := -1
+	longest := -1
+	longestStrength := -1
 	for _, c := range bridges {
-		if c.strength > best {
-			best = c.strength
+		if c.strength > strongest {
+			strongest = c.strength
+		}
+		if c.length >= longest && c.strength > longestStrength {
+			longest = c.length
+			longestStrength = c.strength
 		}
 	}
-	return best
+	answerA = strongest
+	answerB = longestStrength
 }
 
 func main() {
-	fmt.Println("A:", solve(getChallenge()))
-	//fmt.Println("B:", solve(getChallenge()))
+	solve(getChallenge())
+	fmt.Println("A:", answerA)
+	fmt.Println("B:", answerB)
 }

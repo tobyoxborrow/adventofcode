@@ -14,7 +14,15 @@ var sample1 = []string{
 }
 
 func TestSolve(t *testing.T) {
-	if solve(sample1) != 31 {
+	solve(sample1)
+	if answerA != 31 {
+		t.Fail()
+	}
+}
+
+func TestSolveB(t *testing.T) {
+	solve(sample1)
+	if answerB != 19 {
 		t.Fail()
 	}
 }

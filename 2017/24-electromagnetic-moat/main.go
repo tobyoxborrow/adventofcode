@@ -31,12 +31,12 @@ func getChallenge() []string {
 }
 
 type component struct {
-	id       string
+	id       int
 	ports    [2]int
 	strength int
 }
 
-func parseLine(s string) *component {
+func parseLine(s string, id int) *component {
 	fields := strings.Split(s, "/")
 	var ports [2]int
 	var err error
@@ -49,7 +49,7 @@ func parseLine(s string) *component {
 		panic(err)
 	}
 	strength := ports[0] + ports[1]
-	return &component{s, ports, strength}
+	return &component{id, ports, strength}
 }
 
 var components []*component
@@ -57,14 +57,13 @@ var components []*component
 func makeComponents(lines []string) (components []*component) {
 	components = make([]*component, len(lines))
 	for i, line := range lines {
-		components[i] = parseLine(line)
+		components[i] = parseLine(line, i)
 	}
 	return
 }
 
 type bridge struct {
-	//visited  map[string]bool
-	visited  []string
+	visited  []int
 	strength int
 	length   int
 }
@@ -72,19 +71,11 @@ type bridge struct {
 var bridges []*bridge
 
 func newBridge() *bridge {
-	//v := make(map[string]bool)
-	v := make([]string, 0)
+	v := make([]int, 0)
 	return &bridge{v, 0, 0}
 }
 
 func addBridge(pbridge *bridge, c *component) *bridge {
-	/*
-		_visited := make(map[string]bool, len(pbridge.visited)+1)
-		for k, v := range pbridge.visited {
-			_visited[k] = v
-		}
-		_visited[c.id] = true
-	*/
 	_visited := append(pbridge.visited, c.id)
 	_strength := pbridge.strength + c.strength
 	_length := pbridge.length + 1
@@ -94,7 +85,7 @@ func addBridge(pbridge *bridge, c *component) *bridge {
 	return nbridge
 }
 
-func seenComponent(id string, bridge *bridge) bool {
+func seenComponent(id int, bridge *bridge) bool {
 	for _, v := range bridge.visited {
 		if v == id {
 			return true
@@ -104,7 +95,6 @@ func seenComponent(id string, bridge *bridge) bool {
 }
 
 func buildBridges(c *component, pport int, pbridge *bridge) {
-	//if pbridge.visited[c.id] {
 	if seenComponent(c.id, pbridge) {
 		return
 	}

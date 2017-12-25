@@ -78,23 +78,27 @@ func newBridge() *bridge {
 	return &bridge{p, c, v, 0}
 }
 
-func addBridge(pbridge *bridge, c *component) *bridge {
+func addBridge(pbridge bridge, c *component) bridge {
 	_path := pbridge.path
 	_components := pbridge.components
-	_visited := pbridge.visited
+	//_visited := pbridge.visited
+	_visited := make(map[string]bool, len(pbridge.visited))
+	for k, v := range pbridge.visited {
+		_visited[k] = v
+	}
 	_strength := pbridge.strength
 
-	_path += fmt.Sprintf(",%s", c.id)
+	_path += fmt.Sprintf("%s--", c.id)
 	_components = append(_components, c)
 	_visited[c.id] = true
 	_strength += c.strength
 
 	nbridge := &bridge{_path, _components, _visited, _strength}
 	bridges = append(bridges, nbridge)
-	return nbridge
+	return *nbridge
 }
 
-func buildBridges(c *component, pport int, pbridge *bridge) {
+func buildBridges(c *component, pport int, pbridge bridge) {
 	if pbridge.visited[c.id] {
 		return
 	}
@@ -116,28 +120,22 @@ func buildBridges(c *component, pport int, pbridge *bridge) {
 			buildBridges(v, cport, cbridge)
 		}
 	}
-
-	return
 }
 
 func solve(lines []string) int {
+	bridges = nil
 	components = makeComponents(lines)
 
-	// find all the components that can be used at the start (contain port 0)
-	var startingComponents []*component
-	for _, v := range components {
-		if v.ports[0] == 0 || v.ports[1] == 0 {
-			startingComponents = append(startingComponents, v)
+	// build some bridges
+	for _, c := range components {
+		if c.ports[0] == 0 || c.ports[1] == 0 {
+			bridge := newBridge()
+			buildBridges(c, 0, *bridge)
 		}
 	}
 
-	// build some bridges
-	best := -1
-	for _, c := range startingComponents {
-		bridge := newBridge()
-		buildBridges(c, 0, bridge)
-	}
 	// which is the best?
+	best := -1
 	for _, c := range bridges {
 		if c.strength > best {
 			best = c.strength

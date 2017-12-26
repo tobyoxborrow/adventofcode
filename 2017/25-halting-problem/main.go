@@ -35,13 +35,12 @@ type stateMachine struct {
 	state  byte // current state
 	mi     int  // memory index pointer
 	steps  int  // number of steps to perform
-	states map[byte]*state
+	states []*state
 	memory []int8
 }
 
 type state struct {
-	id        byte
-	substates map[int8]*substate
+	substates [2]*substate
 }
 
 type substate struct {
@@ -71,20 +70,16 @@ func parseSubState(s []string) *substate {
 	} else {
 		direction = right
 	}
-	next = s[3][26]
+	next = s[3][26] - 65 // A -> 0, B -> 1, and so on
 	return &substate{id, write, direction, next}
 }
 
 func parseBlock(s []string) *state {
 	// In state A:
-	id := s[0][9]
-	substates := make(map[int8]*substate, 2)
-	var tmp *substate
-	tmp = parseSubState(s[1:5])
-	substates[tmp.id] = tmp
-	tmp = parseSubState(s[5:9])
-	substates[tmp.id] = tmp
-	return &state{id, substates}
+	var substates [2]*substate
+	substates[0] = parseSubState(s[1:5])
+	substates[1] = parseSubState(s[5:9])
+	return &state{substates}
 }
 
 func parseSteps(s string) int {
@@ -100,11 +95,11 @@ func parseSteps(s string) int {
 func newStateMachine(s []string) *stateMachine {
 	// since the input structure is well formed, will make assumptions about
 	// value locations
-	currentState := s[0][15]
+	currentState := s[0][15] - 65 // A -> 0, B -> 1, and so on
 	steps := parseSteps(s[1])
 
 	var block []string
-	states := make(map[byte]*state)
+	var states []*state
 	for c := 3; c < len(s); c++ {
 		// use empty lines as signal for new block
 		// to help, added a blank line to the end of the test/input rules so
@@ -112,7 +107,7 @@ func newStateMachine(s []string) *stateMachine {
 		if len(s[c]) == 0 {
 			if block != nil {
 				b := parseBlock(block)
-				states[b.id] = b
+				states = append(states, b)
 			}
 			block = nil
 			continue
@@ -132,9 +127,9 @@ func (sm *stateMachine) read() int8 {
 		// a bit of fiddling
 		// don't actually go into negative space, rather, move the memory strip
 		// to the right and change what is zero
-		memory := make([]int8, len(sm.memory)+1)
-		copy(memory[1:], sm.memory)
-		sm.memory = memory
+		sm.memory = append(sm.memory, 0)
+		copy(sm.memory[1:], sm.memory)
+		sm.memory[0] = 0
 		sm.mi = 0
 		return 0
 	}
@@ -154,7 +149,6 @@ func (sm *stateMachine) execute() {
 		sm.write(nv)
 		sm.mi += cs.substates[v].direction
 		sm.state = cs.substates[v].next
-		//fmt.Println(sm.memory)
 	}
 }
 

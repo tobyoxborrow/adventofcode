@@ -44,22 +44,15 @@ type state struct {
 }
 
 type substate struct {
-	id        int8
 	write     int8
 	direction int
 	next      byte
 }
 
 func parseSubState(s []string) *substate {
-	var id int8
 	var write int8
 	var direction int
 	var next byte
-	if s[0][26] == '0' {
-		id = 0
-	} else {
-		id = 1
-	}
 	if s[1][22] == '0' {
 		write = 0
 	} else {
@@ -71,7 +64,7 @@ func parseSubState(s []string) *substate {
 		direction = right
 	}
 	next = s[3][26] - 65 // A -> 0, B -> 1, and so on
-	return &substate{id, write, direction, next}
+	return &substate{write, direction, next}
 }
 
 func parseBlock(s []string) *state {

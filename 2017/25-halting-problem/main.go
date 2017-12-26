@@ -153,41 +153,43 @@ func solve(lines []string) int {
 }
 
 type tapeMemory struct {
-	bits     []int8
+	bits     []bool
 	position int
 }
 
 // read memory value. increase memory if needed
-func (m *tapeMemory) read() int8 {
+func (m *tapeMemory) read() bool {
 	if m.position == len(m.bits) {
-		m.bits = append(m.bits, 0)
-		return 0 // empty memory is always zero
+		m.bits = append(m.bits, false)
+		return false // empty memory is always zero
 	} else if m.position == -1 {
 		// a bit of fiddling
 		// don't actually go into negative space, rather, move the memory strip
 		// to the right and change what is zero
-		m.bits = append(m.bits, 0)
+		m.bits = append(m.bits, false)
 		copy(m.bits[1:], m.bits)
-		m.bits[0] = 0
+		m.bits[0] = false
 		m.position = 0
-		return 0
+		return false
 	}
 	return m.bits[m.position]
 }
 
 // write memory value
-func (m *tapeMemory) write(value int8) {
+func (m *tapeMemory) write(value bool) {
 	m.bits[m.position] = value
 }
 
 func solveB() int {
 	const (
-		A = 0
-		B = 1
-		C = 2
-		D = 3
-		E = 4
-		F = 5
+		A   = 0
+		B   = 1
+		C   = 2
+		D   = 3
+		E   = 4
+		F   = 5
+		off = false
+		on  = true
 	)
 	var memory = &tapeMemory{nil, 0}
 
@@ -196,67 +198,67 @@ func solveB() int {
 		switch state {
 		case A:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position++
 				state = B
-			case 1:
-				memory.write(0)
+			case on:
+				memory.write(off)
 				memory.position--
 				state = C
 			}
 		case B:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position--
 				state = A
-			case 1:
-				//memory.write(1)
+			case on:
+				//memory.write(on)
 				memory.position++
 				state = D
 			}
 		case C:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position++
 				state = A
-			case 1:
-				memory.write(0)
+			case on:
+				memory.write(off)
 				memory.position--
 				state = E
 			}
 		case D:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position++
 				state = A
-			case 1:
-				memory.write(0)
+			case on:
+				memory.write(off)
 				memory.position++
 				state = B
 			}
 		case E:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position--
 				state = F
-			case 1:
-				//memory.write(1)
+			case on:
+				//memory.write(on)
 				memory.position--
 				state = C
 			}
 		case F:
 			switch memory.read() {
-			case 0:
-				memory.write(1)
+			case off:
+				memory.write(on)
 				memory.position++
 				state = D
-			case 1:
-				//memory.write(1)
+			case on:
+				//memory.write(on)
 				memory.position++
 				state = A
 			}
@@ -265,7 +267,9 @@ func solveB() int {
 
 	var checksum int
 	for _, v := range memory.bits {
-		checksum += int(v)
+		if v {
+			checksum++
+		}
 	}
 	return checksum
 }

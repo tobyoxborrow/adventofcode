@@ -35,18 +35,14 @@ type stateMachine struct {
 	state  byte // current state
 	mi     int  // memory index pointer
 	steps  int  // number of steps to perform
-	states []*state
+	states [][2]*substate
 	memory []int8
 }
 
-type state struct {
-	substates [2]*substate
-}
-
 type substate struct {
-	write     int8
-	direction int
-	next      byte
+	value     int8 // value to write for this sub-state
+	direction int  // direction to go after writing
+	next      byte // next state to use after writing
 }
 
 func parseSubState(s []string) *substate {
@@ -67,12 +63,11 @@ func parseSubState(s []string) *substate {
 	return &substate{write, direction, next}
 }
 
-func parseBlock(s []string) *state {
+func parseBlock(s []string) (substates [2]*substate) {
 	// In state A:
-	var substates [2]*substate
 	substates[0] = parseSubState(s[1:5])
 	substates[1] = parseSubState(s[5:9])
-	return &state{substates}
+	return
 }
 
 func parseSteps(s string) int {
@@ -92,7 +87,7 @@ func newStateMachine(s []string) *stateMachine {
 	steps := parseSteps(s[1])
 
 	var block []string
-	var states []*state
+	var states [][2]*substate
 	for c := 3; c < len(s); c++ {
 		// use empty lines as signal for new block
 		// to help, added a blank line to the end of the test/input rules so
@@ -138,10 +133,9 @@ func (sm *stateMachine) execute() {
 	for c := 0; c < sm.steps; c++ {
 		v := sm.read()
 		cs := sm.states[sm.state] // current state
-		nv := cs.substates[v].write
-		sm.write(nv)
-		sm.mi += cs.substates[v].direction
-		sm.state = cs.substates[v].next
+		sm.write(cs[v].value)
+		sm.mi += cs[v].direction
+		sm.state = cs[v].next
 	}
 }
 

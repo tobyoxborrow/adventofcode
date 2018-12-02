@@ -5,7 +5,7 @@ def main():
     """Main"""
     lines = get_challenge()
     print("A: {}".format(solve_a(lines)))
-    # print("B: {}".format(solve_b(lines)))
+    print("B: {}".format(solve_b(lines)))
 
 
 def get_challenge():
@@ -42,9 +42,30 @@ def solve_a(box_ids):
     return boxes_with_two * boxes_with_three
 
 
-def solve_b(lines):
+def solve_b(box_ids):
     """Solve Part B"""
-    return None
+    for box_id in box_ids:
+        for other_box_id in box_ids:
+            if box_id == other_box_id:
+                continue
+            # if more than one character is different we can skip it
+            # we are only interested in boxes that have exactly one difference
+            differences = 0
+            difference_index = -1
+            for index, letter in enumerate(box_id):
+                other_letter = other_box_id[index]
+                if letter != other_letter:
+                    difference_index = index
+                    differences += 1
+                if differences > 1:
+                    # no good
+                    break
+            if differences != 1:
+                # no good
+                continue
+            # return the common letters only
+            return "%s%s" % (box_id[0:difference_index], box_id[difference_index+1:])
+    raise "Failed to solve part B"
 
 
 if __name__ == '__main__':

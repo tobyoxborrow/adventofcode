@@ -40,8 +40,9 @@ sys    0m0.007s
 ```
 time ./target/release/rust
 A: 580
+B: 81972
 
-real   0m0.009s
-user   0m0.002s
-sys    0m0.002s
+real	0m0.055s
+user	0m0.038s
+sys	0m0.010s
 ```

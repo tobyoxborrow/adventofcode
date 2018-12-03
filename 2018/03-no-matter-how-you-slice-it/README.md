@@ -25,6 +25,12 @@ Nobody can even agree on how to cut the fabric. The whole piece of fabric they'r
 ## Result
 ### python3
 ```
+time pypy3 sliceit.py
+A: 104439
+
+real	0m1.026s
+user	0m0.734s
+sys	0m0.185s
 ```
 
 ### golang

@@ -4,8 +4,9 @@
 def main():
     """Main"""
     lines = get_challenge()
-    print("A: {}".format(solve_a(lines)))
-    # print("B: {}".format(solve_b(lines)))
+    grid = draw_grid(lines)
+    print("A: {}".format(solve_a(grid)))
+    print("B: {}".format(solve_b(grid)))
 
 
 def get_challenge():
@@ -37,8 +38,10 @@ def parse_claim(claim):
     return (claim_id, offset_x, offset_y, width, height)
 
 
-def solve_a(claims):
-    """Solve Part A"""
+def draw_grid(claims):
+    """Draw the grid and the claims"""
+    # create a dict of tuple coordinates
+    # seems a bit easier than a list of lists
     grid = dict()
     for grid_x in range(1000):
         for grid_y in range(1000):
@@ -48,15 +51,7 @@ def solve_a(claims):
         parsed_claim = parse_claim(claim)
         draw_claim(grid, parsed_claim)
 
-    overlapping = 0
-
-    for pos in grid:
-        # count how many ids are stored at each position
-        # any inches with more than one claim id are considered overlapping
-        if len(grid[pos]) > 1:
-            overlapping += 1
-
-    return overlapping
+    return grid
 
 
 def draw_claim(grid, claim):
@@ -73,9 +68,43 @@ def draw_claim(grid, claim):
             grid[(offset_x+claim_x, offset_y+claim_y)].append(claim_id)
 
 
-def solve_b(box_ids):
+def solve_a(grid):
+    """Solve Part A"""
+    overlapping = 0
+
+    for pos in grid:
+        # count how many ids are stored at each position
+        # any inches with more than one claim id are considered overlapping
+        if len(grid[pos]) > 1:
+            overlapping += 1
+
+    return overlapping
+
+
+def solve_b(grid):
     """Solve Part B"""
-    pass
+    seen_claims = set()
+    overlapping_claims = set()
+
+    for pos in grid:
+        # go through the grid and record each claim seen
+        # and record each overlapping claim
+        claim_ids = grid[pos]
+        if not claim_ids:
+            continue
+        for claim_id in claim_ids:
+            seen_claims.add(claim_id)
+        if len(claim_ids) > 1:
+            for claim_id in claim_ids:
+                overlapping_claims.add(claim_id)
+
+    for overlapping_claim_id in overlapping_claims:
+        seen_claims.remove(overlapping_claim_id)
+
+    if len(seen_claims) != 1:
+        raise Exception("Found too many non-overlapping claims")
+
+    return seen_claims.pop()
 
 
 if __name__ == '__main__':

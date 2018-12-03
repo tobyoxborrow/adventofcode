@@ -6,7 +6,7 @@ https://adventofcode.com/2018/day/3
 Nobody can even agree on how to cut the fabric. The whole piece of fabric they're working on is a very large square - at least 1000 inches on each side. Each Elf has made a claim about which area of fabric would be ideal for Santa's suit. All claims have an ID and consist of a single rectangle with edges parallel to the edges of the fabric.
 
 * A: How many square inches of fabric are within two or more claims?
-* B:
+* B: What is the ID of the only claim that doesn't overlap?
 
 ## Sample Input
 ```
@@ -27,10 +27,11 @@ Nobody can even agree on how to cut the fabric. The whole piece of fabric they'r
 ```
 time pypy3 sliceit.py
 A: 104439
+B: 701
 
-real	0m1.026s
-user	0m0.734s
-sys	0m0.185s
+real	0m1.181s
+user	0m0.853s
+sys	0m0.171s
 ```
 
 ### golang

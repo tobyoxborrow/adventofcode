@@ -4,6 +4,7 @@ const PUZZLE: &str = include_str!("input");
 
 fn main() {
     println!("A: {}", solve_a());
+    println!("B: {}", solve_b());
 }
 
 fn solve_a() -> i32 {
@@ -31,4 +32,28 @@ fn solve_a() -> i32 {
     }
 
     count_2 * count_3
+}
+
+fn solve_b() -> String {
+    for box_id in PUZZLE.lines() {
+        for other_box_id in PUZZLE.lines() {
+            if box_id == other_box_id { continue; }
+
+            // create pair of bytes from both strings
+            let difference: u32 = box_id.bytes().zip(other_box_id.bytes())
+                .filter(|x| x.0 != x.1) // filter just non-matching bytes
+                .fold(0, |acc, _val| acc + 1);  // count how many
+
+            if difference != 1 { continue; }
+
+            // create pair of bytes from both strings
+            let answer: Vec<u8> = box_id.bytes().zip(other_box_id.bytes())
+                .filter(|x| x.0 == x.1) // filter just matching bytes
+                .map(|x| x.0)   // return just one of the pairs, doesn't matter which
+                .collect();     // transform into collection
+
+            return String::from_utf8(answer).unwrap()
+        }
+    }
+    panic!("Could not find solution");
 }

@@ -25,13 +25,14 @@ astwjcmbrktdihqrutfylvzpnx
 ## Result
 ### python3
 ```
-time pypy3 checksum.py
+pypy3 ./checksum.py
 A: 6175
 B: asgwjcmzredihqoutcylvzinx
 
-real	0m0.086s
-user	0m0.058s
-sys	0m0.023s
+hyperfine --warmup 3 pypy3 ./checksum.py
+Benchmark #1: pypy3 ./checksum.py
+  Time (mean ± σ):      96.5 ms ±   5.8 ms    [User: 60.4 ms, System: 21.5 ms]
+  Range (min … max):    91.2 ms … 115.5 ms
 ```
 
 ### golang
@@ -41,10 +42,11 @@ TODO
 
 ### rust
 ```
-time ./target/release/rust
+./rust/target/release/rust
 A: 6175
+B: asgwjcmzredihqoutcylvzinx
 
-real	0m0.013s
-user	0m0.002s
-sys	0m0.003s
+hyperfine --warmup 3 ./rust/target/release/rust
+  Time (mean ± σ):      17.5 ms ±   2.2 ms    [User: 3.0 ms, System: 1.4 ms]
+  Range (min … max):    15.3 ms …  30.2 ms
 ```

@@ -7,10 +7,13 @@ fn main() {
 }
 
 fn solve_a() -> usize {
-    // The difference between a and A, b and B, and so on in ASCII
-    let offset: u8 = 32;
+    let polymer: Vec<u8> = PUZZLE.trim().bytes().collect();
+    trigger_polymer(polymer)
+}
 
-    let mut polymer: Vec<u8> = PUZZLE.trim().bytes().collect();
+fn trigger_polymer(mut polymer: Vec<u8>) -> usize {
+    // The difference between a and A, b and B, and so on in ASCII
+    const OFFSET: u8 = 32;
     let mut reactions = 1;
     // loop until there are no more reactions within the polymer
     while reactions != 0 {
@@ -55,7 +58,7 @@ fn solve_a() -> usize {
                 };
 
                 // if the unit reacts with the next, skip this unit and the next
-                if c == &(p + offset) || c == &(p - offset) {
+                if c == &(p + OFFSET) || c == &(p - OFFSET) {
                     reacting = true;
                     continue;
                 }

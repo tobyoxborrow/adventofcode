@@ -24,9 +24,10 @@ TODO
 ```
 % ./target/release/rust
 A: 11814
+B: 4282
 
-% hyperfine --warmup 3 ./target/release/rust
-Benchmark #1: ./target/release/rust
-  Time (mean ± σ):      16.4 ms ±   1.0 ms    [User: 2.9 ms, System: 1.2 ms]
-  Range (min … max):    14.8 ms …  19.2 ms
+% hyperfine --warmup 3 target/release/rust
+Benchmark #1: target/release/rust
+  Time (mean ± σ):     124.9 ms ±   5.5 ms    [User: 109.4 ms, System: 2.0 ms]
+  Range (min … max):   117.8 ms … 139.2 ms
 ```

@@ -3,7 +3,7 @@ const PUZZLE: &str = include_str!("../../input");
 
 fn main() {
     println!("A: {}", solve_a());
-    //println!("B: {}", solve_b());
+    println!("B: {}", solve_b());
 }
 
 fn solve_a() -> usize {
@@ -11,10 +11,33 @@ fn solve_a() -> usize {
     trigger_polymer(polymer)
 }
 
-fn trigger_polymer(mut polymer: Vec<u8>) -> usize {
-    // The difference between a and A, b and B, and so on in ASCII
+fn solve_b() -> usize {
+    // The difference between A and a, B and b, and so on in ASCII
     const OFFSET: u8 = 32;
-    let mut reactions = 1;
+
+    let mut shortest_polymer = std::usize::MAX;
+
+    for unit in 65..90 {    // A through Z in ASCII
+        let polymer: Vec<u8> = PUZZLE.trim().bytes()
+            .filter(|x| x != &(unit))
+            .filter(|x| x != &(unit + OFFSET))
+            .collect();
+        let polymer_length = trigger_polymer(polymer);
+        //println!("{} {}", unit as char, polymer_length);
+        if polymer_length < shortest_polymer {
+            shortest_polymer = polymer_length;
+        }
+    }
+
+    shortest_polymer
+}
+
+fn trigger_polymer(mut polymer: Vec<u8>) -> usize {
+    // The difference between A and a, B and b, and so on in ASCII
+    const OFFSET: u8 = 32;
+
+    let mut reactions = std::usize::MAX;
+
     // loop until there are no more reactions within the polymer
     while reactions != 0 {
         let mut new_polymer = Vec::new();

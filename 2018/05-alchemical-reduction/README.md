@@ -30,4 +30,10 @@ B: 4282
 Benchmark #1: target/release/rust
   Time (mean ± σ):     124.9 ms ±   5.5 ms    [User: 109.4 ms, System: 2.0 ms]
   Range (min … max):   117.8 ms … 139.2 ms
+
+Second version with improvements from solutions on Reddit:
+% hyperfine --warmup 3 'target/release/rust'
+Benchmark #1: target/release/rust
+  Time (mean ± σ):      24.4 ms ±   1.3 ms    [User: 9.8 ms, System: 1.8 ms]
+  Range (min … max):    22.5 ms …  30.6 ms
 ```

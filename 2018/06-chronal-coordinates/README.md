@@ -6,7 +6,7 @@ https://adventofcode.com/2018/day/6
 The device produces a list of coordinates (your puzzle input). Using only the Manhattan distance, determine the area around each coordinate by counting the number of integer X,Y locations that are closest to that coordinate (and aren't tied in distance to any other coordinate).
 
 * A: What is the size of the largest area that isn't infinite?
-* B: 
+* B: What is the size of the region containing all locations which have a total distance to all given coordinates of less than 10000?
 
 ## Sample Input
 ```
@@ -19,12 +19,13 @@ The device produces a list of coordinates (your puzzle input). Using only the Ma
 ```
 
 ## Result
-### golang
-```
-TODO
-```
-
 ### rust
 ```
-TODO
+% target/release/aoc201806
+A: 3293
+
+% hyperfine --warmup 3 target/release/aoc201806
+Benchmark #1: target/release/aoc201806
+  Time (mean ± σ):      51.1 ms ±  20.1 ms    [User: 31.3 ms, System: 2.1 ms]
+  Range (min … max):    44.6 ms … 178.9 ms
 ```

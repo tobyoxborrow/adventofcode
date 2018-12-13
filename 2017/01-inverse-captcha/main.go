@@ -17,11 +17,11 @@ func getChallenge() string {
 
 func solve(s string) (x int) {
 	sLen := len(s)
-	for c := 0; c < sLen; c++ {
-		digit := int(s[c])
+	for i, c := range s {
+		digit := int(c)
 		var nextDigit int
-		if (c + 1) < sLen {
-			nextDigit = int(s[c+1])
+		if (i + 1) < sLen {
+			nextDigit = int(s[i+1])
 		} else {
 			nextDigit = int(s[0])
 		}

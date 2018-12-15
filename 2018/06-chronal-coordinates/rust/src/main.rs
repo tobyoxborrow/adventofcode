@@ -15,7 +15,7 @@ const PUZZLE: &str = include_str!("../../input");
 fn main() {
     let points = parse_points(PUZZLE);
     println!("A: {}", solve_a(&points));
-    //println!("B: {}", solve_b(&points));
+    println!("B: {}", solve_b(&points));
 }
 
 // read in the points from the source input text
@@ -31,6 +31,14 @@ fn parse_points(input: &str) -> Vec<(isize,isize)> {
     }
 
     points
+}
+
+// https://en.wikipedia.org/wiki/Taxicab_geometry
+fn distance(a: (isize,isize), b: (isize,isize)) -> usize {
+    (
+        (a.0 - b.0).abs() +
+        (a.1 - b.1).abs()
+    ) as usize
 }
 
 fn solve_a(points: &Vec<(isize,isize)>) -> usize {
@@ -82,12 +90,6 @@ fn solve_a(points: &Vec<(isize,isize)>) -> usize {
         //println!("");
     }
 
-    /*
-    for i in ignored.iter() {
-        println!("{}", i);
-    }
-    */
-
     points.iter().enumerate()
         // skip point ids that reach into the infinite
         .filter(|p| ignored.contains(&p.0) == false)
@@ -101,10 +103,30 @@ fn solve_a(points: &Vec<(isize,isize)>) -> usize {
         .unwrap()
 }
 
-// https://en.wikipedia.org/wiki/Taxicab_geometry
-fn distance(a: (isize,isize), b: (isize,isize)) -> usize {
-    (
-        (a.0 - b.0).abs() +
-        (a.1 - b.1).abs()
-    ) as usize
+fn solve_b(points: &Vec<(isize,isize)>) -> usize {
+    let grid_width = points.iter().map(|p| p.0).max().unwrap();
+    let grid_height = points.iter().map(|p| p.1).max().unwrap();
+
+    let mut count = 0;
+
+    // loop over each grid position
+    // no need to enlarge the grid as with solve_a
+    for gy in 0..(grid_height+1) {
+        for gx in 0..(grid_width+1) {
+            // sum the distances of each point from this position on the grid
+            let distances: usize = points.iter()
+                .enumerate()
+                .map(|p| distance((gx, gy), ((p.1).0, (p.1).1)))
+                .sum()
+                ;
+
+            if distances < 10000 {
+                count += 1;
+            }
+            //print!("{} ", distances);
+        }
+        //println!("");
+    }
+
+    count
 }

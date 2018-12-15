@@ -23,9 +23,9 @@ The device produces a list of coordinates (your puzzle input). Using only the Ma
 ```
 % target/release/aoc201806
 A: 3293
+B: 45176
 
-% hyperfine --warmup 3 target/release/aoc201806
 Benchmark #1: target/release/aoc201806
-  Time (mean ± σ):      51.1 ms ±  20.1 ms    [User: 31.3 ms, System: 2.1 ms]
-  Range (min … max):    44.6 ms … 178.9 ms
+  Time (mean ± σ):      53.1 ms ±   1.1 ms    [User: 37.0 ms, System: 1.8 ms]
+  Range (min … max):    51.2 ms …  56.2 ms
 ```

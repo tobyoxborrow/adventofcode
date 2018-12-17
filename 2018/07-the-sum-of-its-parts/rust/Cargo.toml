@@ -1,0 +1,8 @@
+[package]
+name = "aoc201807"
+version = "0.1.0"
+authors = ["Toby Oxborrow <toby@oxborrow.net>"]
+edition = "2018"
+
+[dependencies]
+petgraph = "*"

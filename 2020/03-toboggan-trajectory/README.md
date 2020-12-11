@@ -30,10 +30,7 @@ B: 3898725600
 real    0m0.034s
 user    0m0.007s
 sys     0m0.006s
-```
 
-Initial benchmark, compiling the regex on each use:
-```Shell
 % hyperfine ./target/release/aoc202003
 Benchmark #1: ./target/release/aoc202003
   Time (mean ± σ):       3.8 ms ±   0.2 ms    [User: 2.3 ms, System: 0.7 ms]

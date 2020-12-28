@@ -4,7 +4,7 @@ https://adventofcode.com/2020/day/7
 
 ## Challenges
 * A: How many bag colors can eventually contain at least one shiny gold bag?
-* B:
+* B: How many individual bags are required inside your single shiny gold bag?
 
 ## Sample Input
 ```
@@ -21,4 +21,11 @@ dotted black bags contain no other bags.
 
 ## Result
 ```Shell
+time ./target/release/aoc202007
+A: 177
+B: 34988
+
+real    0m0.008s
+user    0m0.008s
+sys     0m0.000s
 ```

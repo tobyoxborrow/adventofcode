@@ -37,7 +37,10 @@ Benchmark #1: pypy3 ./checksum.py
 
 ### golang
 ```
-TODO
+hyperfine --warmup 30 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      46.2 ms ±  10.6 ms    [User: 3.2 ms, System: 8.4 ms]
+  Range (min … max):    36.9 ms … 116.4 ms    61 runs
 ```
 
 ### rust

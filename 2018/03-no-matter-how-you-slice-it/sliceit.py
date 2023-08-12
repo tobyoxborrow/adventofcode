@@ -12,7 +12,7 @@ def main():
 def get_challenge():
     """Read lines from the challenge input file"""
     lines = list()
-    with open("./input", 'r') as hdl:
+    with open("./input.txt", 'r') as hdl:
         for line in hdl.readlines():
             lines.append(line.strip())
     return lines

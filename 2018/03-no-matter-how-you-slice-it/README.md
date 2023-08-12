@@ -25,19 +25,16 @@ Nobody can even agree on how to cut the fabric. The whole piece of fabric they'r
 ## Result
 ### python3
 ```
-time pypy3 sliceit.py
-A: 104439
-B: 701
-
-real	0m1.181s
-user	0m0.853s
-sys	0m0.171s
+% hyperfine --warmup 3 "/usr/bin/pypy3 ./sliceit.py"
+Benchmark 1: /usr/bin/pypy3 ./sliceit.py
+  Time (mean ± σ):      1.128 s ±  0.168 s    [User: 1.002 s, System: 0.100 s]
+  Range (min … max):    0.936 s …  1.426 s    10 runs
 ```
 
 ### golang
 ```
-```
-
-### rust
-```
+% hyperfine --warmup 3 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      1.463 s ±  0.300 s    [User: 1.129 s, System: 0.442 s]
+  Range (min … max):    1.153 s …  2.151 s    10 runs
 ```

@@ -27,14 +27,14 @@ Nobody can even agree on how to cut the fabric. The whole piece of fabric they'r
 ```
 % hyperfine --warmup 3 "/usr/bin/pypy3 ./sliceit.py"
 Benchmark 1: /usr/bin/pypy3 ./sliceit.py
-  Time (mean ± σ):      1.128 s ±  0.168 s    [User: 1.002 s, System: 0.100 s]
-  Range (min … max):    0.936 s …  1.426 s    10 runs
+  Time (mean ± σ):     427.6 ms ±  18.3 ms    [User: 365.7 ms, System: 42.0 ms]
+  Range (min … max):   402.7 ms … 460.4 ms    10 runs
 ```
 
 ### golang
 ```
 % hyperfine --warmup 3 ./main
 Benchmark 1: ./main
-  Time (mean ± σ):     681.5 ms ±  20.5 ms    [User: 524.3 ms, System: 190.2 ms]
-  Range (min … max):   659.1 ms … 710.9 ms    10 runs
+  Time (mean ± σ):     281.6 ms ±  11.1 ms    [User: 209.9 ms, System: 62.7 ms]
+  Range (min … max):   269.3 ms … 302.5 ms    10 runs
 ```

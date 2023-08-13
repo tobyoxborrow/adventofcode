@@ -67,17 +67,15 @@ type Grid map[Coordinates][]Claim
 func drawGrid(claims []Claim) Grid {
 	grid := make(Grid)
 
-	for i := 0; i < 1000; i++ {
-		for j := 0; j < 1000; j++ {
-			var emptyClaim []Claim
-			grid[Coordinates{i, j}] = emptyClaim
-		}
-	}
-
 	for _, claim := range claims {
 		for claimX := 0; claimX < claim.width; claimX++ {
 			for claimY := 0; claimY < claim.height; claimY++ {
 				coords := Coordinates{claim.offsetX + claimX, claim.offsetY + claimY}
+				_, ok := grid[coords]
+				if !ok {
+					var emptyClaims []Claim
+					grid[coords] = emptyClaims
+				}
 				grid[coords] = append(grid[coords], claim)
 			}
 		}

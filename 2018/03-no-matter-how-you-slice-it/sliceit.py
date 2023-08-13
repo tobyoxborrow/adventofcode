@@ -43,9 +43,6 @@ def draw_grid(claims):
     # create a dict of tuple coordinates
     # seems a bit easier than a list of lists
     grid = dict()
-    for grid_x in range(1000):
-        for grid_y in range(1000):
-            grid[(grid_x, grid_y)] = list()
 
     for claim in claims:
         parsed_claim = parse_claim(claim)
@@ -65,7 +62,10 @@ def draw_claim(grid, claim):
 
     for claim_x in range(width):
         for claim_y in range(height):
-            grid[(offset_x+claim_x, offset_y+claim_y)].append(claim_id)
+            key = (offset_x+claim_x, offset_y+claim_y)
+            if key not in grid:
+                grid[key] = list()
+            grid[key].append(claim_id)
 
 
 def solve_a(grid):

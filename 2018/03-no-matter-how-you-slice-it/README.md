@@ -35,6 +35,6 @@ Benchmark 1: /usr/bin/pypy3 ./sliceit.py
 ```
 % hyperfine --warmup 3 ./main
 Benchmark 1: ./main
-  Time (mean ± σ):      1.463 s ±  0.300 s    [User: 1.129 s, System: 0.442 s]
-  Range (min … max):    1.153 s …  2.151 s    10 runs
+  Time (mean ± σ):     681.5 ms ±  20.5 ms    [User: 524.3 ms, System: 190.2 ms]
+  Range (min … max):   659.1 ms … 710.9 ms    10 runs
 ```

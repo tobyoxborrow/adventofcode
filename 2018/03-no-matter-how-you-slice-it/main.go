@@ -16,8 +16,12 @@ func parseInput(s string) []string {
 }
 
 func main() {
-	fmt.Println(SolveA(input))
-	fmt.Println(SolveB(input))
+	lines := parseInput(input)
+	claims := makeClaimsFromLines(lines)
+	grid := drawGrid(claims)
+
+	fmt.Println(SolveA(grid))
+	fmt.Println(SolveB(grid))
 }
 
 type Claim struct {
@@ -82,11 +86,7 @@ func drawGrid(claims []Claim) Grid {
 	return grid
 }
 
-func SolveA(input string) int {
-	lines := parseInput(input)
-	claims := makeClaimsFromLines(lines)
-	grid := drawGrid(claims)
-
+func SolveA(grid Grid) int {
 	overlapped := 0
 	for _, v := range grid {
 		if len(v) > 1 {
@@ -97,11 +97,7 @@ func SolveA(input string) int {
 	return overlapped
 }
 
-func SolveB(input string) int {
-	lines := parseInput(input)
-	claims := makeClaimsFromLines(lines)
-	grid := drawGrid(claims)
-
+func SolveB(grid Grid) int {
 	seenClaimIds := make(map[int]bool)
 	overlappingClaimsIds := make(map[int]bool)
 

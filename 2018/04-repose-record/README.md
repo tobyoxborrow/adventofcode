@@ -30,16 +30,16 @@ python3 ./guard_log.py
 A: 19874
 B: 22687
 
-hyperfine --warmup 3 'python3 ./guard_log.py'
-Benchmark #1: python3 ./guard_log.py
-  Time (mean ± σ):     377.8 ms ± 158.8 ms    [User: 103.1 ms, System: 53.7 ms]
-  Range (min … max):   324.8 ms … 829.8 ms
+% hyperfine --warmup 3 ./guard_log.py
+Benchmark 1: ./guard_log.py
+  Time (mean ± σ):      72.6 ms ±   9.4 ms    [User: 32.9 ms, System: 11.3 ms]
+  Range (min … max):    62.0 ms … 102.0 ms    44 runs
 ```
 
 ### golang
 ```
-```
-
-### rust
-```
+% hyperfine --warmup 3 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      47.5 ms ±   3.7 ms    [User: 4.1 ms, System: 5.4 ms]
+  Range (min … max):    39.7 ms …  59.3 ms    61 runs
 ```

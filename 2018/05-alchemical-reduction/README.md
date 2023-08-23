@@ -17,7 +17,10 @@ UunNbBAaWwplrRoOgGLlJvzZoNnEeqQOVjQWwqzZJBbjuUJfFSsjuKcCDdkgGvVZzmMWwUMLlodDOrU
 ## Result
 ### golang
 ```
-TODO
+% hyperfine --warmup 3 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      90.7 ms ±   4.6 ms    [User: 45.8 ms, System: 16.0 ms]
+  Range (min … max):    82.5 ms … 103.1 ms    31 runs
 ```
 
 ### rust
@@ -30,8 +33,10 @@ B: 4282
 Benchmark #1: target/release/rust
   Time (mean ± σ):     124.9 ms ±   5.5 ms    [User: 109.4 ms, System: 2.0 ms]
   Range (min … max):   117.8 ms … 139.2 ms
+```
 
 Second version with improvements from solutions on Reddit:
+```
 % hyperfine --warmup 3 'target/release/rust'
 Benchmark #1: target/release/rust
   Time (mean ± σ):      24.4 ms ±   1.3 ms    [User: 9.8 ms, System: 1.8 ms]

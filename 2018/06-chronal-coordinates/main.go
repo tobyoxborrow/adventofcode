@@ -14,11 +14,8 @@ import (
 //go:embed input.txt
 var input string
 
-func parseInput(s string) []string {
-	return strings.Split(strings.TrimSpace(s), "\n")
-}
-
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var draw = flag.Bool("draw", false, "draw grids")
 
 func main() {
 	flag.Parse()
@@ -36,11 +33,17 @@ func main() {
 	grid := newGrid(locations)
 	grid.populateDistances()
 
-	// drawGridA(grid)
-	// drawGridB(grid)
+	if *draw {
+		drawGridA(grid)
+		drawGridB(grid)
+	}
 
 	fmt.Println("A:", SolveA(grid))
-	fmt.Println("B:", SolveB(grid))
+	fmt.Println("B:", SolveB(grid, 10000))
+}
+
+func parseInput(s string) []string {
+	return strings.Split(strings.TrimSpace(s), "\n")
 }
 
 type Point struct {
@@ -54,7 +57,7 @@ type Location struct {
 	isInfinite bool
 }
 
-type Locations map[int]Location
+type Locations []Location
 
 func abs(n int) int {
 	if n < 0 {
@@ -81,7 +84,7 @@ type Grid struct {
 }
 
 func newLocations(lines []string) Locations {
-	locations := make(Locations)
+	locations := make(Locations, len(lines))
 	for index, line := range lines {
 		line = strings.TrimSpace(line)
 		splitPos := strings.Index(line, ",")
@@ -127,54 +130,55 @@ func newGrid(locations Locations) Grid {
 func (grid *Grid) populateDistances() {
 	for gy := 0; gy <= grid.maxY+1; gy++ {
 		for gx := 0; gx <= grid.maxX+1; gx++ {
-			gridItem := GridItem{
+			item := GridItem{
 				closest:     -1,
 				isLocation:  false,
 				distanceSum: 0,
 			}
-			gridPoint := Point{x: gx, y: gy}
+			point := Point{gx, gy}
 
 			shortestDistance := grid.maxX + grid.maxY
 			shortestMatches := 0
 			shortestMatch := -1
 
-			for _, location := range grid.locations {
-				pointDistance := location.DistanceFrom(gridPoint)
-				gridItem.distanceSum += pointDistance
+			for index := range grid.locations {
+				pointDistance := grid.locations[index].DistanceFrom(point)
+				item.distanceSum += pointDistance
 				if pointDistance < shortestDistance {
 					shortestDistance = pointDistance
 					shortestMatches = 1
-					shortestMatch = location.id
+					shortestMatch = grid.locations[index].id
 				} else if pointDistance == shortestDistance {
 					shortestMatches++
 				}
 			}
 
 			if shortestDistance == 0 {
-				gridItem.isLocation = true
+				item.isLocation = true
 			}
 
 			if shortestMatches == 1 {
-				gridItem.closest = shortestMatch
+				item.closest = shortestMatch
 				if gx < 1 || gy < 1 || gx > grid.maxX || gy > grid.maxY {
-					location := grid.locations[gridItem.closest]
-					location.isInfinite = true
-					grid.locations[gridItem.closest] = location
+					// location := grid.locations[item.closest]
+					// location.isInfinite = true
+					grid.locations[item.closest].isInfinite = true
 				}
 			}
 
-			grid.points = append(grid.points, gridItem)
+			grid.points = append(grid.points, item)
 		}
 	}
 }
 
-/*
 func drawGridA(grid Grid) {
 	fmt.Printf("Locations:\n%#v\n", grid.locations)
 	// fmt.Printf("grid: %v wide x %#v high\n", grid.maxX, grid.maxY)
+	pointsIndex := 0
 	for gy := 0; gy <= grid.maxY+1; gy++ {
 		for gx := 0; gx <= grid.maxX+1; gx++ {
-			item := grid.points[Point{gx, gy}]
+			item := grid.points[pointsIndex]
+			pointsIndex++
 			alphaId := item.closest
 			if alphaId > 26 {
 				alphaId -= 26
@@ -200,9 +204,11 @@ func drawGridA(grid Grid) {
 func drawGridB(grid Grid) {
 	fmt.Printf("Locations:\n%#v\n", grid.locations)
 	// fmt.Printf("grid: %v wide x %#v high\n", grid.maxX, grid.maxY)
+	pointsIndex := 0
 	for gy := 0; gy <= grid.maxY+1; gy++ {
 		for gx := 0; gx <= grid.maxX+1; gx++ {
-			item := grid.points[Point{gx, gy}]
+			item := grid.points[pointsIndex]
+			pointsIndex++
 			r := '.'
 			if item.distanceSum < 10000 {
 				r = '#'
@@ -219,12 +225,11 @@ func drawGridB(grid Grid) {
 		fmt.Println()
 	}
 }
-*/
 
 func SolveA(grid Grid) int {
 	areaSizes := make(map[int]int)
 	for _, item := range grid.points {
-		if grid.locations[item.closest].isInfinite {
+		if item.closest == -1 || grid.locations[item.closest].isInfinite {
 			continue
 		}
 		areaSizes[item.closest]++
@@ -240,11 +245,11 @@ func SolveA(grid Grid) int {
 	return largestAreaSize
 }
 
-func SolveB(grid Grid) int {
+func SolveB(grid Grid, limit int) int {
 	count := 0
 
 	for _, item := range grid.points {
-		if item.distanceSum < 10000 {
+		if item.distanceSum < limit {
 			count++
 		}
 	}

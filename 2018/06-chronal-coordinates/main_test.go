@@ -98,7 +98,7 @@ func TestSolveB(t *testing.T) {
 	grid := newGrid(locations)
 	grid.populateDistances()
 
-	result := SolveB(grid)
+	result := SolveB(grid, 32)
 	if result != expected {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}
@@ -142,6 +142,6 @@ func BenchmarkSolveB(b *testing.B) {
 	grid := newGrid(locations)
 	grid.populateDistances()
 	for i := 0; i < b.N; i++ {
-		SolveB(grid)
+		SolveB(grid, 32)
 	}
 }

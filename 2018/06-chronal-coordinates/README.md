@@ -41,3 +41,11 @@ Benchmark 1: ./main
   Time (mean ± σ):      71.0 ms ±   6.5 ms    [User: 16.4 ms, System: 15.7 ms]
   Range (min … max):    62.0 ms …  90.3 ms    36 runs
 ```
+
+Part A danger regions:
+
+![](grid_a.png)
+
+Part B safe region:
+
+![](grid_b.png)

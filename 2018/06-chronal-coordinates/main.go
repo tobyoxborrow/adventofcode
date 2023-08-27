@@ -4,7 +4,11 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"log"
+	"math"
 	"os"
 	"runtime/pprof"
 	"strconv"
@@ -172,58 +176,64 @@ func (grid *Grid) populateDistances() {
 }
 
 func drawGridA(grid Grid) {
-	fmt.Printf("Locations:\n%#v\n", grid.locations)
-	// fmt.Printf("grid: %v wide x %#v high\n", grid.maxX, grid.maxY)
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{grid.maxX + 1, grid.maxY + 1}})
+
 	pointsIndex := 0
 	for gy := 0; gy <= grid.maxY+1; gy++ {
 		for gx := 0; gx <= grid.maxX+1; gx++ {
 			item := grid.points[pointsIndex]
 			pointsIndex++
-			alphaId := item.closest
-			if alphaId > 26 {
-				alphaId -= 26
-			}
-			var r rune
-			if item.closest == -1 {
-				r = '.'
-			} else if item.isLocation {
-				r = rune(alphaId + 65)
-			} else {
+
+			colour := color.RGBA{255, 255, 255, 255}
+
+			if item.closest >= 0 {
+				locationAsByte := uint8(math.Round(float64(item.closest) / float64(len(grid.locations)) * 100))
+
+				colour = color.RGBA{100, 155 + locationAsByte, 155 + locationAsByte, 255}
 				if grid.locations[item.closest].isInfinite {
-					r = '_'
-				} else {
-					r = rune(alphaId + 97)
+					colour = color.RGBA{110 + locationAsByte, 110 + locationAsByte, 110 + locationAsByte, 255}
 				}
 			}
-			fmt.Printf("%c", r)
+
+			if item.isLocation {
+				colour = color.RGBA{0, 0, 0, 255}
+			}
+
+			img.Set(gx, gy, colour)
 		}
-		fmt.Println()
 	}
+
+	f, _ := os.Create("grid_a.png")
+	png.Encode(f, img)
+	fmt.Println("Part A written to grid_a.png")
 }
 
 func drawGridB(grid Grid) {
-	fmt.Printf("Locations:\n%#v\n", grid.locations)
-	// fmt.Printf("grid: %v wide x %#v high\n", grid.maxX, grid.maxY)
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{grid.maxX + 1, grid.maxY + 1}})
+
 	pointsIndex := 0
 	for gy := 0; gy <= grid.maxY+1; gy++ {
 		for gx := 0; gx <= grid.maxX+1; gx++ {
 			item := grid.points[pointsIndex]
 			pointsIndex++
-			r := '.'
+
+			colour := color.RGBA{255, 255, 255, 255}
+
 			if item.distanceSum < 10000 {
-				r = '#'
+				colour = color.RGBA{100, 200, 200, 255}
 			}
-			alphaId := item.closest
-			if alphaId > 26 {
-				alphaId -= 26
-			}
+
 			if item.isLocation {
-				r = rune(alphaId + 65)
+				colour = color.RGBA{0, 0, 0, 255}
 			}
-			fmt.Printf("%c", r)
+
+			img.Set(gx, gy, colour)
 		}
-		fmt.Println()
 	}
+
+	f, _ := os.Create("grid_b.png")
+	png.Encode(f, img)
+	fmt.Println("Part B written to grid_b.png")
 }
 
 func SolveA(grid Grid) int {

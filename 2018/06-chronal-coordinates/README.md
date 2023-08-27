@@ -38,6 +38,6 @@ B: 45176
 
 % hyperfine --warmup 3 ./main
 Benchmark 1: ./main
-  Time (mean ± σ):     208.1 ms ±   7.0 ms    [User: 129.3 ms, System: 31.5 ms]
-  Range (min … max):   200.7 ms … 222.5 ms    14 runs
+  Time (mean ± σ):     151.8 ms ±   8.5 ms    [User: 93.9 ms, System: 13.8 ms]
+  Range (min … max):   138.2 ms … 176.1 ms    19 runs
 ```

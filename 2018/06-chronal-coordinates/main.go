@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-//go:embed input.orig.txt
+//go:embed input.txt
 var input string
 
 func parseInput(s string) []string {
@@ -74,7 +74,7 @@ type GridItem struct {
 }
 
 type Grid struct {
-	points    map[Point]GridItem
+	points    []GridItem
 	locations Locations
 	maxX      int
 	maxY      int
@@ -103,20 +103,22 @@ func newLocations(lines []string) Locations {
 }
 
 func newGrid(locations Locations) Grid {
-	grid := Grid{
-		points:    make(map[Point]GridItem),
-		locations: locations,
-		maxX:      0,
-		maxY:      0,
+	maxX := 0
+	maxY := 0
+	for _, location := range locations {
+		if location.point.x > maxX {
+			maxX = location.point.x
+		}
+		if location.point.y > maxY {
+			maxY = location.point.y
+		}
 	}
 
-	for _, location := range locations {
-		if location.point.x > grid.maxX {
-			grid.maxX = location.point.x
-		}
-		if location.point.y > grid.maxY {
-			grid.maxY = location.point.y
-		}
+	grid := Grid{
+		points:    make([]GridItem, 0, maxX*maxY),
+		locations: locations,
+		maxX:      maxX,
+		maxY:      maxY,
 	}
 
 	return grid
@@ -161,11 +163,12 @@ func (grid *Grid) populateDistances() {
 				}
 			}
 
-			grid.points[gridPoint] = gridItem
+			grid.points = append(grid.points, gridItem)
 		}
 	}
 }
 
+/*
 func drawGridA(grid Grid) {
 	fmt.Printf("Locations:\n%#v\n", grid.locations)
 	// fmt.Printf("grid: %v wide x %#v high\n", grid.maxX, grid.maxY)
@@ -216,6 +219,7 @@ func drawGridB(grid Grid) {
 		fmt.Println()
 	}
 }
+*/
 
 func SolveA(grid Grid) int {
 	areaSizes := make(map[int]int)
@@ -239,12 +243,9 @@ func SolveA(grid Grid) int {
 func SolveB(grid Grid) int {
 	count := 0
 
-	for gy := 0; gy <= grid.maxY+1; gy++ {
-		for gx := 0; gx <= grid.maxX+1; gx++ {
-			item := grid.points[Point{gx, gy}]
-			if item.distanceSum < 10000 {
-				count++
-			}
+	for _, item := range grid.points {
+		if item.distanceSum < 10000 {
+			count++
 		}
 	}
 

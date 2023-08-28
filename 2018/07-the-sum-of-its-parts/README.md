@@ -40,9 +40,10 @@ With minor transformation I changed input to input.dot and used graphviz to prod
 ```
 % target/release/aoc201807
 A: PFKQWJSVUXEMNIHGTYDOZACRLB
+B: 865
 
-% hyperfine --warmup 3 'target/release/aoc201807'
-Benchmark #1: target/release/aoc201807
-  Time (mean ± σ):      17.5 ms ±   2.4 ms    [User: 1.4 ms, System: 1.4 ms]
-  Range (min … max):    15.4 ms …  28.8 ms
+% hyperfine --warmup 3 ./target/release/aoc201807
+Benchmark 1: ./target/release/aoc201807
+  Time (mean ± σ):      20.8 ms ±   2.5 ms    [User: 3.3 ms, System: 1.4 ms]
+  Range (min … max):    16.4 ms …  31.7 ms    143 runs
 ```

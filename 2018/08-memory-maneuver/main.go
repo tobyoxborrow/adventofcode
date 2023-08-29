@@ -29,7 +29,7 @@ func main() {
 
 	numbers := parseInput(input)
 	fmt.Println("A:", SolveA(numbers))
-	// fmt.Println("B:", SolveB(lines))
+	fmt.Println("B:", SolveB(numbers))
 }
 
 func parseInput(s string) []byte {
@@ -46,8 +46,9 @@ func parseInput(s string) []byte {
 }
 
 type Node struct {
-	children      []*Node
-	metadataValue int
+	children        []*Node
+	metadataEntries []int
+	metadataValue   int
 }
 
 type Tree struct {
@@ -79,8 +80,10 @@ func recurseNumbers(numbers []byte) (*Node, int) {
 		numbersIndex += length
 	}
 
+	node.metadataEntries = make([]int, metadataCount)
 	for i := 0; i < metadataCount; i++ {
 		value := int(numbers[numbersIndex+i])
+		node.metadataEntries[i] = value // for Part 2
 		node.metadataValue += value
 	}
 	numbersIndex += metadataCount
@@ -98,14 +101,32 @@ func (n *Node) SumMetadata() int {
 	return metadataSum
 }
 
-func SolveA(numbers []byte) int {
-	tree := NewTree(numbers)
+func (n *Node) ValueMetadata() int {
+	if len(n.children) == 0 {
+		return n.metadataValue
+	}
 
-	value := tree.root.SumMetadata()
+	value := 0
+
+	for i := 0; i < len(n.metadataEntries); i++ {
+		childIndex := n.metadataEntries[i] - 1
+		if childIndex > len(n.children)-1 {
+			continue
+		}
+		value += n.children[childIndex].ValueMetadata()
+	}
 
 	return value
 }
 
+func SolveA(numbers []byte) int {
+	tree := NewTree(numbers)
+
+	return tree.root.SumMetadata()
+}
+
 func SolveB(numbers []byte) int {
-	return 0
+	tree := NewTree(numbers)
+
+	return tree.root.ValueMetadata()
 }

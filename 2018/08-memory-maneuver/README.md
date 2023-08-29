@@ -27,5 +27,12 @@ A----------------------------------
 ## Result
 ### golang
 ```
+% ./main
 A: 38780
+B: 18232
+
+% hyperfine --warmup 3 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      56.7 ms ±   4.3 ms    [User: 4.5 ms, System: 6.0 ms]
+  Range (min … max):    47.4 ms …  66.9 ms    49 runs
 ```

@@ -47,3 +47,15 @@ Benchmark 1: ./target/release/aoc201807
   Time (mean ± σ):      20.8 ms ±   2.5 ms    [User: 3.3 ms, System: 1.4 ms]
   Range (min … max):    16.4 ms …  31.7 ms    143 runs
 ```
+
+### golang
+```
+% ./main
+A: JDEKPFABTUHOQSXVYMLZCNIGRW
+B: 1048
+
+% hyperfine --warmup 3 ./main
+Benchmark 1: ./main
+  Time (mean ± σ):      40.9 ms ±   2.9 ms    [User: 2.7 ms, System: 0.4 ms]
+  Range (min … max):    34.7 ms …  46.8 ms    66 runs
+```

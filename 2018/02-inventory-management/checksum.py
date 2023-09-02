@@ -65,7 +65,7 @@ def solve_b(box_ids):
                 continue
             # return the common letters only
             return "%s%s" % (box_id[0:difference_index], box_id[difference_index+1:])
-    raise "Failed to solve part B"
+    raise RuntimeError("Failed to solve part B")
 
 
 if __name__ == '__main__':

@@ -1,3 +1,3 @@
-module aoc2018_02
+module aoc201802
 
 go 1.21.0

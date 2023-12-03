@@ -11,7 +11,7 @@ def get_challenge(filename):
     return lines
 
 
-def solve(filename):
+def part1(filename):
     lines = get_challenge(filename)
 
     total = 0
@@ -36,5 +36,57 @@ def solve(filename):
     return total
 
 
-print(solve("sample.txt"))
-print(solve("input.txt"))
+def findDigits(line):
+    digits = [
+        ('one', 1),
+        ('two', 2),
+        ('three', 3),
+        ('four', 4),
+        ('five', 5),
+        ('six', 6),
+        ('seven', 7),
+        ('eight', 8),
+        ('nine', 9),
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+        ('7', 7),
+        ('8', 8),
+        ('9', 9),
+    ]
+
+    positions = {}
+    
+    for i, _ in enumerate(line):
+        for digit in digits:
+            try:
+                if line[i:].index(digit[0]) == 0:
+                    positions[i] = digit[1]
+            except ValueError:
+                continue
+    
+    return positions
+
+def part2(filename):
+    lines = get_challenge(filename)
+
+    total = 0
+    for line in lines:
+        positions = findDigits(line)
+        first = min(positions.keys())
+        last = max(positions.keys())
+        number = positions[first]*10 + positions[last]
+        total += number
+        
+    return total
+
+
+print(part1("sample.txt"))
+print(part1("input.txt"))
+
+
+print(part2("sampleb.txt"))
+print(part2("input.txt"))

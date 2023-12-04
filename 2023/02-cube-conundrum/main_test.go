@@ -18,3 +18,14 @@ func TestSolveA(t *testing.T) {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
+
+func TestSolveB(t *testing.T) {
+	expected := 2286
+
+	games := parseInput(sample)
+
+	result := SolveB(games)
+	if result != expected {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}

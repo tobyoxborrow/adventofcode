@@ -29,7 +29,7 @@ func main() {
 
 	games := parseInput(input)
 	fmt.Println("A:", SolveA(games))
-	//fmt.Println("B:", SolveB(games))
+	fmt.Println("B:", SolveB(games))
 }
 
 func parseInput(s string) []Game {
@@ -122,9 +122,27 @@ func (g *Game) AddSet(set Set) {
 	}
 }
 
+func (g *Game) Power() int {
+	minSet := Set{}
+	for _, set := range g.sets {
+		minSet.red = max(minSet.red, set.red)
+		minSet.green = max(minSet.green, set.green)
+		minSet.blue = max(minSet.blue, set.blue)
+	}
+	return minSet.red * minSet.green * minSet.blue
+}
+
 func SolveA(games []Game) (total int) {
 	for _, game := range games {
 		total += game.value
+	}
+
+	return total
+}
+
+func SolveB(games []Game) (total int) {
+	for _, game := range games {
+		total += game.Power()
 	}
 
 	return total

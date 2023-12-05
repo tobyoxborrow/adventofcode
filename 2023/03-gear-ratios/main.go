@@ -29,7 +29,7 @@ func main() {
 
 	grid := parseInput(input)
 	fmt.Println("One:", SolveOne(grid))
-	//fmt.Println("Two:", SolveTwo(grid))
+	fmt.Println("Two:", SolveTwo(grid))
 }
 
 func parseInput(s string) Grid {
@@ -61,12 +61,16 @@ func parseInput(s string) Grid {
 		for x := 0; x <= grid.width; x++ {
 			cell := grid.cells[Coordinate{x, y}]
 			if cell.isPart {
-				//cell.partNumbers = grid.FindNumbers(Coordinate{x, y})
+				partNumbers := grid.FindNumbers(Coordinate{x, y})
 				//grid.cells[Coordinate{x, y}] = cell
 				//fmt.Printf("%s (%d, %d) -> ", string(cell.item), x, y)
-				for _, partNumber := range grid.FindNumbers(Coordinate{x, y}) {
+				for _, partNumber := range partNumbers {
 					grid.partOne += partNumber
 					//fmt.Printf("%d ", partNumber)
+				}
+				if cell.isGear && len(partNumbers) == 2 {
+					grid.partTwo += partNumbers[0] * partNumbers[1]
+					//fmt.Printf("%v", partNumbers)
 				}
 				//fmt.Printf("\n")
 			}
@@ -82,10 +86,11 @@ type Coordinate struct {
 }
 
 type Cell struct {
-	item     rune // original value of the cell
-	isNumber bool
-	isPart   bool
-	//partNumbers []int
+	item        rune // original value of the cell
+	isNumber    bool
+	isPart      bool
+	isGear      bool
+	partNumbers []int
 }
 
 type Cells map[Coordinate]Cell
@@ -95,6 +100,7 @@ type Grid struct {
 	width   int
 	height  int
 	partOne int // answer to Part One
+	partTwo int // answer to Part Two
 }
 
 func (g *Grid) NewCell(item rune) (cell Cell) {
@@ -102,6 +108,9 @@ func (g *Grid) NewCell(item rune) (cell Cell) {
 	if item == '.' {
 		cell.isNumber = false
 		cell.isPart = false
+	} else if item == '*' {
+		cell.isPart = true
+		cell.isGear = true
 	} else if item >= '0' && item <= '9' {
 		cell.isNumber = true
 	} else if item >= 33 && item <= 47 {
@@ -188,4 +197,8 @@ func (g *Grid) FindNumber(c Coordinate) (number int) {
 
 func SolveOne(grid Grid) int {
 	return grid.partOne
+}
+
+func SolveTwo(grid Grid) int {
+	return grid.partTwo
 }

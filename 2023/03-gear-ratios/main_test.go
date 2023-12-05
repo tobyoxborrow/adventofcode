@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-//go:embed sampled.txt
+//go:embed sample.txt
 var sample string
 
 func TestSolveOne(t *testing.T) {
@@ -14,6 +14,17 @@ func TestSolveOne(t *testing.T) {
 	grid := parseInput(sample)
 
 	result := SolveOne(grid)
+	if result != expected {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestSolveTwo(t *testing.T) {
+	expected := 467835
+
+	grid := parseInput(sample)
+
+	result := SolveTwo(grid)
 	if result != expected {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}

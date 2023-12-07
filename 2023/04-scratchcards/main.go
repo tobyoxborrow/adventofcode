@@ -29,7 +29,7 @@ func main() {
 
 	pile := parseInput(input)
 	fmt.Println("One:", SolveOne(pile))
-	//fmt.Println("Two:", SolveTwo(grid))
+	fmt.Println("Two:", SolveTwo(pile))
 }
 
 func parseInput(s string) Pile {
@@ -66,12 +66,12 @@ type Card struct {
 	winners numberSet
 	numbers numberSet
 	score   int
+	matches int
 }
 
 type Pile struct {
 	cards   []Card
 	partOne int // answer to Part One
-	//partTwo int // answer to Part Two
 }
 
 func NewCard(line string) Card {
@@ -94,6 +94,7 @@ func NewCard(line string) Card {
 		winners: make(map[int]struct{}),
 		numbers: make(map[int]struct{}),
 		score:   0,
+		matches: 0,
 	}
 
 	// Winning cards
@@ -129,6 +130,7 @@ func NewCard(line string) Card {
 			} else {
 				score *= 2
 			}
+			card.matches += 1
 		}
 	}
 	card.score += score
@@ -140,8 +142,19 @@ func SolveOne(pile Pile) int {
 	return pile.partOne
 }
 
-/*
-func SolveTwo(pile Pile) int {
-	return pile.partTwo
+func recurseWinners(pile Pile, cardIndex int) (count int) {
+	count = 1
+
+	for i := 1; i <= pile.cards[cardIndex].matches; i++ {
+		count += recurseWinners(pile, cardIndex+i)
+	}
+
+	return
 }
-*/
+
+func SolveTwo(pile Pile) (count int) {
+	for index := range pile.cards {
+		count += recurseWinners(pile, index)
+	}
+	return
+}

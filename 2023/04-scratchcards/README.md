@@ -6,6 +6,7 @@ https://adventofcode.com/2023/day/4
 The Elf leads you over to the pile of colorful cards. There, you discover dozens of scratchcards, all with their opaque covering already scratched off. Picking one up, it looks like each card has two lists of numbers separated by a vertical bar (|): a list of winning numbers and then a list of numbers you have. You organize the information into a table (your puzzle input).
 
 * One: Take a seat in the large pile of colorful cards. How many points are they worth in total?
+* Two: Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, how many total scratchcards do you end up with?
 
 ## Sample Input
 ```

@@ -29,8 +29,8 @@ func main() {
 	}
 
 	almanac := parseInput(input)
-	fmt.Println("One:", SolveOne(almanac))
-	//fmt.Println("Two:", SolveTwo(almanac))
+	//fmt.Println("One:", SolveOne(almanac))
+	fmt.Println("Two:", SolveTwo(almanac))
 }
 
 func parseInput(s string) Almanac {
@@ -165,11 +165,14 @@ func SolveOne(almanac Almanac) int {
 	return location
 }
 
-/*
-func SolveTwo(pile Pile) (count int) {
-	for index := range pile.cards {
-		count += recurseWinners(pile, index)
+func SolveTwo(almanac Almanac) int {
+	location := math.MaxInt32
+	for i := 0; i < len(almanac.seeds); i += 2 {
+		for j := 0; j < almanac.seeds[i+1]; j++ {
+			seed := almanac.seeds[i] + j
+			seedLocation := almanac.seedToLocation(seed)
+			location = min(location, seedLocation)
+		}
 	}
-	return
+	return location
 }
-*/

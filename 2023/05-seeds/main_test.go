@@ -19,9 +19,8 @@ func TestSolveOne(t *testing.T) {
 	}
 }
 
-/*
 func TestSolveTwo(t *testing.T) {
-	expected := 30
+	expected := 46
 
 	parsedInput := parseInput(sample)
 
@@ -30,4 +29,3 @@ func TestSolveTwo(t *testing.T) {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
-*/

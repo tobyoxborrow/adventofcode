@@ -11,23 +11,21 @@ var sample string
 func TestSolveOne(t *testing.T) {
 	expected := 288
 
-	parsedInput := parseInput(sample)
+	parsedInput := parseInputOne(sample)
 
-	result := SolveOne(parsedInput)
+	result := Solve(parsedInput)
 	if result != expected {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
 
-/*
 func TestSolveTwo(t *testing.T) {
-	expected := 46
+	expected := 71503
 
-	parsedInput := parseInput(sample)
+	parsedInput := parseInputTwo(sample)
 
-	result := SolveTwo(parsedInput)
+	result := Solve(parsedInput)
 	if result != expected {
 		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
-*/

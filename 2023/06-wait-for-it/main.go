@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"runtime/pprof"
 	"strconv"
@@ -28,12 +27,11 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	races := parseInput(input)
-	fmt.Println("One:", SolveOne(races))
-	//fmt.Println("Two:", SolveTwo(races))
+	//fmt.Println("One:", Solve(parseInputOne(input)))
+	fmt.Println("Two:", Solve(parseInputTwo(input)))
 }
 
-func parseInput(s string) Races {
+func parseInputOne(s string) Races {
 	races := Races{}
 
 	lines := strings.Split(s, "\n")
@@ -59,6 +57,29 @@ func parseInput(s string) Races {
 	return races
 }
 
+func parseInputTwo(s string) Races {
+	races := Races{}
+
+	lines := strings.Split(s, "\n")
+
+	time, err := strconv.Atoi(strings.ReplaceAll(lines[0][11:], " ", ""))
+	if err != nil {
+		panic(err)
+	}
+	distance, err := strconv.Atoi(strings.ReplaceAll(lines[1][11:], " ", ""))
+	if err != nil {
+		panic(err)
+	}
+	race := Race{
+		time:     time,
+		distance: distance,
+	}
+	races.list = append(races.list, race)
+	fmt.Printf("%v\n", races)
+
+	return races
+}
+
 type Race struct {
 	time     int
 	distance int
@@ -74,12 +95,10 @@ func (r *Race) try(holdTime int) {
 }
 
 type Races struct {
-	list    []Race
-	partOne int // answer to Part One
-	//partTwo int // answer to Part Two
+	list []Race
 }
 
-func SolveOne(races Races) (result int) {
+func Solve(races Races) (result int) {
 	for _, race := range races.list {
 		for i := 1; i < race.time; i++ {
 			race.try(i)
@@ -91,9 +110,4 @@ func SolveOne(races Races) (result int) {
 		}
 	}
 	return
-}
-
-func SolveTwo(races Races) int {
-	location := math.MaxInt32
-	return location
 }
